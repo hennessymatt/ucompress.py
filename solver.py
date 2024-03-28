@@ -550,7 +550,6 @@ class ForceControlled(Experiment):
         # pressure
         #----------------------------------------------------
         self.F_p[:-1] = self.D[:-1,:] @ self.p - self.r[:-1] * self.lam_r[:-1]**2 / 2 / k[:-1] / self.J[:-1] * self.dLdt[:-1]
-        # self.F_p[:-1] = self.D[:-1,:] @ self.p - self.r[:-1] / 2 / k[:-1] * self.dLdt[:-1]
         self.F_p[-1] = self.p[-1]
 
         #----------------------------------------------------
@@ -623,17 +622,6 @@ class ForceControlled(Experiment):
             self.r * self.lam_r**2 * self.J_l / 2 / k / self.J**2 * self.dLdt + 
             self.r * self.lam_r**2 / 2 / k / self.J / self.dt * self.lam_t**2
         )[:-1]
-
-        # self.J_pu[:-1,:] = -(
-        #     -np.diag(self.r * k_J * self.dLdt / 2 / k**2)[:-1,:] @ self.J_u +
-        #     np.diag(self.r * self.lam_t * self.lam_z / k / self.dt)[:-1,:] @ self.lam_t_u
-        # )
-
-        # self.J_pl[:-1, 0] = -(
-        #     -self.r * k_J * self.J_l / 2 / k**2 * self.dLdt +
-        #     self.r / 2 / k / self.dt * self.lam_t**2
-        # )[:-1]
-
 
         #----------------------------------------------------
         # axial stretch
