@@ -1,8 +1,5 @@
 import numpy as np
 from scipy.optimize import root_scalar
-import sys
-
-sys.path.append('../')
 from cheb import *
 
 class Solution():
