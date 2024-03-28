@@ -21,7 +21,7 @@ problem = solver.ForceControlled(model, pars)
 sol_instant = problem.initial_response()
 print(sol_instant.lam_z)
 print(sol_instant.p)
-sol = problem.solve({"monitor_convergence": True})
+sol = problem.solve({"monitor_convergence": False})
 
 # pr.disable()
 # pr.print_stats(sort = 'cumtime')
