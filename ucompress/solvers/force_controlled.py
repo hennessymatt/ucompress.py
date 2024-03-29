@@ -48,8 +48,15 @@ class ForceControlled(Experiment):
             fun(sol.root)
         else:
             print('ERROR: solver for initial response did not converge')
+            return
 
-        return Solution(0, self.u, self.p[0], self.lam_z, self.F)
+        sol = Solution(self.pars, 0)
+        sol.u = self.u
+        sol.lam_z = self.lam_z
+        sol.p = self.p
+        sol.F = self.F
+
+        return sol
 
 
     def set_initial_guess(self):
