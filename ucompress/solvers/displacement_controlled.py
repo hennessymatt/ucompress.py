@@ -27,6 +27,7 @@ class DisplacementControlled(Experiment):
         self.p = 1 / np.sqrt(self.lam_z) * S_r
         self.compute_force()
 
+        # create a solution object for the initial response
         sol = Solution(self.pars, 0)
         sol.u = self.u
         sol.lam_z = self.lam_z
@@ -38,9 +39,10 @@ class DisplacementControlled(Experiment):
     def set_initial_guess(self):
         """
         Sets the initial guess of the solution to
-        the initial response
+        the small-time (instantaneous response) solution
         """
 
+        # compute the initial response
         self.initial_response()
         
         # set the initial guess of the solution
@@ -83,10 +85,12 @@ class DisplacementControlled(Experiment):
         Updates the entries in the Jacobian for the stress balance
         """
 
+        # compute the stress derivatives
         (S_r_r, S_r_t, S_r_z, 
         S_t_r, S_t_t, S_t_z,
         S_z_r, S_z_t, S_z_z) = self.mech.eval_stress_derivatives(self.lam_r, self.lam_t, self.lam_z)
 
+        # compute the permeability and its derivative wrt J
         k = self.perm.eval_permeability(self.J)
         k_J = self.perm.eval_permeability_derivative(self.J)
 
@@ -118,7 +122,3 @@ class DisplacementControlled(Experiment):
         # build the global block Jacobian
         #----------------------------------------------------
         self.JAC = self.J_uu
-                        
-
-
-

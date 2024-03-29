@@ -2,21 +2,28 @@ from .solution import Solution
 from .experiment import Experiment, np
 from scipy.optimize import root_scalar
 
-
 class ForceControlled(Experiment):
+    """
+    A class for force-controlled experiments
+    """
 
     def __init__(self, pars, model):
+        """
+        Constructor, inherits the attribes from the Experiment
+        class and adds a few more associated with specific 
+        Jacobian entries
+        """
 
         super().__init__(pars, model)
         self.loading = 'force'
 
         N = self.N
 
-        # residual vectors
+        # preallocate residual vectors
         self.FUN = np.zeros(2*N+1)
         self.F_p = np.zeros(N)
 
-        # define extra Jacobian entries
+        # preallocate extra Jacobian entries
         self.J_up = np.zeros((N, N))
         self.J_ul = np.zeros((N, 1))
 
@@ -32,6 +39,8 @@ class ForceControlled(Experiment):
         Computes the initial response of the sample
         """
 
+        # helper function for solving the nonlinea problem for
+        # the initial response
         def fun(lam_z):
             self.lam_z = lam_z
             self.lam_r = np.array([1 / np.sqrt(self.lam_z)])
@@ -43,13 +52,17 @@ class ForceControlled(Experiment):
 
             return self.pars.F - self.F
         
+        # solve the nonlinear scalar equation for the axial stretch
         sol = root_scalar(fun, method = 'secant', x0=self.pars.lam_z, x1 = self.pars.lam_z * 1.01)
+        
+        # check if the solver converged
         if sol.converged == True:
             fun(sol.root)
         else:
             print('ERROR: solver for initial response did not converge')
             return
 
+        # create a solution object and store the solution
         sol = Solution(self.pars, 0)
         sol.u = self.u
         sol.lam_z = self.lam_z
@@ -61,10 +74,14 @@ class ForceControlled(Experiment):
 
     def set_initial_guess(self):
         """
-        Sets the initial guess of the solution
+        Sets the initial guess of the solution to
+        the small-time (instantaneous response) solution
         """
 
+        # compute the initial response
         self.initial_response()
+
+        # assume a boundary-layer-type solution for the pressure
         self.p = self.p[0] * (1 - np.exp(-(1-self.r) / self.pars.t[1]**(1/2)))
 
         # set the initial guess of the solution
@@ -128,10 +145,13 @@ class ForceControlled(Experiment):
         """
         Updates the entries in the Jacobian for the stress balance
         """
+
+        # compute derivatives of the elastic stresses
         (S_r_r, S_r_t, S_r_z, 
         S_t_r, S_t_t, S_t_z,
         S_z_r, S_z_t, S_z_z) = self.mech.eval_stress_derivatives(self.lam_r, self.lam_t, self.lam_z)
 
+        # compute the permeability and its derivative wrt J
         k = self.perm.eval_permeability(self.J)
         k_J = self.perm.eval_permeability_derivative(self.J)
 
