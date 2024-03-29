@@ -190,9 +190,8 @@ class Experiment():
         else:
             print('ERROR: Unknown loading type')
 
-        # preallocate
-        X_all = np.zeros((2 * self.N+2, self.pars.Nt+1))
-        X_all[self.ind_l, 0] = 1
+        # initalise solution object
+        sol = Solution(self.pars)
 
         # begin time stepping
         for n in range(self.pars.Nt):
@@ -208,7 +207,8 @@ class Experiment():
             # check for convergence
             if not(conv):
                 print(f'Newton iterations did not converge at step {n} (t = {self.pars.t[n+1]:.2e})')
-                return X_all[:,:n]
+                sol.trim_solution(n)
+                return sol
 
             # compute pressure
             if self.loading == 'displacement':
@@ -221,17 +221,12 @@ class Experiment():
             self.lam_t_old = self.lam_t
     
             # store soln
-            X_all[self.ind_u, n+1] = self.u
-            X_all[self.ind_p, n+1] = self.p
-            X_all[self.ind_l, n+1] = self.lam_z
-            X_all[self.ind_F, n+1] = self.F
-
-        sol = Solution(self.pars.t, 
-                X_all[self.ind_u,:], 
-                X_all[self.ind_p,:], 
-                X_all[self.ind_l,:],
-                X_all[self.ind_F,:]
-                )
+            sol.u[:, n+1] = self.u
+            sol.p[:, n+1] = self.p
+            sol.lam_z[n+1] = self.lam_z
+            sol.F[n+1] = self.F
+            sol.J[:, n+1] = self.J
+            sol.phi[:, n+1] = 1 - (1 - self.pars.phi_0) / self.J
 
         return sol
 
