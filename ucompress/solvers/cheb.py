@@ -4,7 +4,7 @@ def cheb(N):
     """
     Computes the Chebyshev differentiation matix
     following the approach by Trefethen but with
-    some personal modifications
+    some modifications
     """
 
     # my adjustment
