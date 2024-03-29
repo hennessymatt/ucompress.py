@@ -19,6 +19,13 @@ class Experiment():
 
         self.preallocate()
 
+        # set default solver options
+        self.opts = {
+            "monitor_convergence": False, # monitor convergence of newton iterations
+            "newton_max_iterations": 10, # maximum number of newton iterations
+            "newton_tol": 1e-6 # newton convergence tolerance
+        }
+
     def preallocate(self):
         """
         Preallocates variables that are common to both solvers
@@ -32,7 +39,6 @@ class Experiment():
         self.ind_u = np.arange(N)
         self.ind_p = np.arange(N, 2*N)
         self.ind_l = 2*N
-        self.ind_F = 2*N + 1
 
         # build operators
         D, y = cheb(self.N)
@@ -109,13 +115,13 @@ class Experiment():
         self.F = 2 * np.pi * np.sum(self.w * (S_z - self.p * self.lam_r * self.lam_t) * self.r)
 
 
-    def newton_iterations(self, X, opts):
+    def newton_iterations(self, X):
         """
         Implementation of Newton's method
         """
-        
+
         conv = False
-        for n in range(self.pars.newton_max_iterations):
+        for n in range(self.opts["newton_max_iterations"]):
 
             # extract solution components
             self.u = X[self.ind_u]
@@ -134,11 +140,11 @@ class Experiment():
             # compute norm of residual
             nf = np.linalg.norm(self.FUN)
 
-            if opts["monitor_convergence"]:
+            if self.opts["monitor_convergence"]:
                 print(f'norm(F) = {nf:.4e}')
 
             # check for convergence
-            if nf < self.pars.newton_conv_tol:
+            if nf < self.opts["newton_tol"]:
                 conv = True
                 break
 
@@ -175,6 +181,11 @@ class Experiment():
         each space and time point
         """
 
+        # overwrite default solver options if user provides
+        # their own
+        if opts != None:
+            self.opts = opts
+
         # initial condition
         self.u_old = np.zeros(self.N)
         self.lam_z_old = 1
@@ -195,14 +206,14 @@ class Experiment():
 
         # begin time stepping
         for n in range(self.pars.Nt):
-            if opts["monitor_convergence"]:
+            if self.opts["monitor_convergence"]:
                 print(f'----solving iteration {n}----')
 
             # assign step size
             self.dt = self.pars.dt[n]
 
             # solve for the next solution
-            X, conv = self.newton_iterations(X, opts)
+            X, conv = self.newton_iterations(X)
 
             # check for convergence
             if not(conv):
