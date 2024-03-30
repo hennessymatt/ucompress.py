@@ -49,7 +49,17 @@ class Mechanics():
         conversion_dict is a dictionary that contains information
         about how to convert any special SymPy functions (e.g elliptic
         integrals) into SciPy functions
+
+        We need to create a copy of the physical parameter dictionary
+        without lam_z.  This avoids a bug where the stresses are
+        always evaluated using the value of lam_z assigned in the
+        parameter dictionary (which is fine for displacement-controlled
+        loading but not force-controlled loading)
         """
+
+        # Copy the physical parameters dict and remove lam_z
+        pars = pars.copy()
+        pars.pop("lam_z")
 
         # Define the arguments of the NumPy function
         args = [self.lam_r, self.lam_t, self.lam_z]

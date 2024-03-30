@@ -50,10 +50,14 @@ class ForceControlled(Experiment):
             self.p = 1 / np.sqrt(self.lam_z) * S_r
             self.compute_force()
 
-            return self.pars.F - self.F
+            return self.pars.physical["F"] - self.F
         
         # solve the nonlinear scalar equation for the axial stretch
-        sol = root_scalar(fun, method = 'secant', x0=self.pars.lam_z, x1 = self.pars.lam_z * 1.01)
+        sol = root_scalar(fun, 
+                          method = 'secant', 
+                          x0 = self.pars.physical["lam_z"], 
+                          x1 = self.pars.physical["lam_z"] * 1.01
+                          )
         
         # check if the solver converged
         if sol.converged == True:
@@ -82,7 +86,7 @@ class ForceControlled(Experiment):
         self.initial_response()
 
         # assume a boundary-layer-type solution for the pressure
-        self.p = self.p[0] * (1 - np.exp(-(1-self.r) / self.pars.t[1]**(1/2)))
+        self.p = self.p[0] * (1 - np.exp(-(1-self.r) / self.pars.computational["t"][1]**(1/2)))
 
         # set the initial guess of the solution
         X = np.r_[
@@ -131,7 +135,7 @@ class ForceControlled(Experiment):
         #----------------------------------------------------
         # axial stretch
         #----------------------------------------------------
-        self.F_l = 2 * np.pi * np.sum(self.w * (S_z - self.lam_r * self.lam_t * self.p) * self.r) - self.pars.F
+        self.F_l = 2 * np.pi * np.sum(self.w * (S_z - self.lam_r * self.lam_t * self.p) * self.r) - self.pars.physical["F"]
 
         #----------------------------------------------------
         # build the global residual vector

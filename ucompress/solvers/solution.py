@@ -12,11 +12,13 @@ class Solution():
         as the t (time) array in pars
         """
 
-        N = pars.N
-        if Nt == None:
-            Nt = pars.Nt
+        N = pars.computational["N"]
 
-        self.t = pars.t
+        self.t = pars.computational["t"]
+        if Nt == None:
+            Nt = pars.computational["Nt"]
+        else:
+            self.t = self.t[:Nt]
 
         # Preallocate NumPy arrays for solution components
         self.u = np.zeros((N, Nt + 1))
@@ -24,7 +26,7 @@ class Solution():
         self.lam_z = np.ones(Nt + 1)
         self.F = np.zeros(Nt + 1)
         self.J = np.ones((N, Nt + 1))
-        self.phi = pars.phi_0 * np.ones((N, Nt + 1))
+        self.phi = pars.physical["phi_0"] * np.ones((N, Nt + 1))
 
 
     def trim_solution(self, n):
@@ -32,7 +34,7 @@ class Solution():
         Trims the solution arrays.  Used when 
         Newton's method doesn't converge
         """
-
+        self.t = self.t[:n]
         self.u = self.u[:, :n]
         self.p = self.p[:, :n]
         self.lam_z = self.lam_z[:n]

@@ -32,7 +32,7 @@ class Experiment():
         """
 
         # number of grid points
-        N = self.pars.N
+        N = self.pars.computational["N"]
         self.N = N
 
         # indices
@@ -171,15 +171,17 @@ class Experiment():
 
         Inputs
         ------
-        X: A NumPy array containing the initial guess of 
-        the solution
+        opts: an optional argument that overwrites the default
+        options for the newton solver
 
 
         Outputs
         -------
-        X_all: A NumPy array containing the solution (u, p, lambda_z) at
-        each space and time point
+        sol: A Solution object that contains the solution components
         """
+
+        # extract time vector
+        t = self.pars.computational["t"]
 
         # overwrite default solver options if user provides
         # their own
@@ -195,9 +197,9 @@ class Experiment():
         X = self.set_initial_guess()
 
         if self.loading == 'displacement':
-            self.lam_z = self.pars.lam_z
+            self.lam_z = self.pars.physical["lam_z"]
         elif self.loading == 'force':
-            self.F = self.pars.lam_z
+            self.F = self.pars.physical["F"]
         else:
             print('ERROR: Unknown loading type')
 
@@ -205,19 +207,19 @@ class Experiment():
         sol = Solution(self.pars)
 
         # begin time stepping
-        for n in range(self.pars.Nt):
+        for n in range(self.pars.computational["Nt"]):
             if self.opts["monitor_convergence"]:
                 print(f'----solving iteration {n}----')
 
             # assign step size
-            self.dt = self.pars.dt[n]
+            self.dt = self.pars.computational["dt"][n]
 
             # solve for the next solution
             X, conv = self.newton_iterations(X)
 
             # check for convergence
             if not(conv):
-                print(f'Newton iterations did not converge at step {n} (t = {self.pars.t[n+1]:.2e})')
+                print(f'Newton iterations did not converge at step {n} (t = {t[n+1]:.2e})')
                 sol.trim_solution(n)
                 return sol
 
@@ -237,7 +239,7 @@ class Experiment():
             sol.lam_z[n+1] = self.lam_z
             sol.F[n+1] = self.F
             sol.J[:, n+1] = self.J
-            sol.phi[:, n+1] = 1 - (1 - self.pars.phi_0) / self.J
+            sol.phi[:, n+1] = 1 - (1 - self.pars.physical["phi_0"]) / self.J
 
         return sol
 
