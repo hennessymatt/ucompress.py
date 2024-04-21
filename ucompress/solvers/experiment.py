@@ -112,7 +112,7 @@ class Experiment():
 
         _, _, S_z = self.mech.eval_stress(self.lam_r, self.lam_t, self.lam_z)
 
-        self.F = 2 * np.pi * np.sum(self.w * (S_z - self.p * self.lam_r * self.lam_t) * self.lam_r * self.lam_t * self.r)
+        self.F = 2 * np.pi * np.sum(self.w * (S_z - self.p * self.lam_r * self.lam_t) * self.r)
 
 
     def newton_iterations(self, X):
