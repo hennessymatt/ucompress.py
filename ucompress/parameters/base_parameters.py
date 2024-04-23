@@ -12,10 +12,10 @@ class BaseParameters():
     G_m:    the shear modulus of the gel matrix
     k_0:    the initial permeability
     phi_0:  the initial porosity (fluid fraction)
-    lam_z:  for displacement-controlled experiments, this is the impose
+    lam_z:  for displacement-controlled experiments, this is the imposed
             axial strain.  For force-controlled experiments, this is 
             the initial guess of the axial strain
-    F:      the force-controlled experiments, this is the imposed force
+    F:      for force-controlled experiments, this is the imposed force
             on the upper platten.  For displacement-controlled experiments,
             this value is not used and does not need to be assigned
 
