@@ -180,8 +180,11 @@ class Experiment():
         sol: A Solution object that contains the solution components
         """
 
+        # initalise solution object
+        sol = Solution(self.pars)
+
         # extract time vector
-        t = self.pars.computational["t"]
+        t = sol.t
 
         # overwrite default solver options if user provides
         # their own
@@ -194,7 +197,7 @@ class Experiment():
         self.lam_r_old, self.lam_t_old = self.compute_stretches(self.u_old)
         
         # initial guess of solution
-        X = self.set_initial_guess()
+        X = self.set_initial_guess(sol)
 
         if self.loading == 'displacement':
             self.lam_z = self.pars.physical["lam_z"]
@@ -203,16 +206,13 @@ class Experiment():
         else:
             print('ERROR: Unknown loading type')
 
-        # initalise solution object
-        sol = Solution(self.pars)
-
         # begin time stepping
         for n in range(self.pars.computational["Nt"]):
             if self.opts["monitor_convergence"]:
                 print(f'----solving iteration {n}----')
 
             # assign step size
-            self.dt = self.pars.computational["dt"][n]
+            self.dt = sol.dt[n]
 
             # solve for the next solution
             X, conv = self.newton_iterations(X)

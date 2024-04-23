@@ -76,17 +76,23 @@ class ForceControlled(Experiment):
         return sol
 
 
-    def set_initial_guess(self):
+    def set_initial_guess(self, sol):
         """
         Sets the initial guess of the solution to
-        the small-time (instantaneous response) solution
+        the small-time (instantaneous response) solution.
+
+        Inputs:
+        sol - A Solution object which contains time points
+
+        Outputs:
+        X - the initial guess of the solution
         """
 
         # compute the initial response
         self.initial_response()
 
         # assume a boundary-layer-type solution for the pressure
-        self.p = self.p[0] * (1 - np.exp(-(1-self.r) / self.pars.computational["t"][1]**(1/2)))
+        self.p = self.p[0] * (1 - np.exp(-(1-self.r) / sol.t[1]**(1/2)))
 
         # set the initial guess of the solution
         X = np.r_[

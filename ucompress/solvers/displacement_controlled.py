@@ -36,10 +36,16 @@ class DisplacementControlled(Experiment):
 
         return sol
 
-    def set_initial_guess(self):
+    def set_initial_guess(self, sol = None):
         """
         Sets the initial guess of the solution to
-        the small-time (instantaneous response) solution
+        the small-time (instantaneous response) solution.
+
+        The argument sol is not used but is needed for consistency
+        with the force-controlled case.
+
+        Outputs:
+        X - the initial guess of the solution
         """
 
         # compute the initial response
