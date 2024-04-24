@@ -200,9 +200,9 @@ class Experiment():
         X = self.set_initial_guess(sol)
 
         if self.loading == 'displacement':
-            self.lam_z = self.pars.physical["lam_z"]
+            self.lam_z = self.pars.nondim["lam_z"]
         elif self.loading == 'force':
-            self.F = self.pars.physical["F"]
+            self.F = self.pars.nondim["F"]
         else:
             print('ERROR: Unknown loading type')
 
@@ -239,7 +239,7 @@ class Experiment():
             sol.lam_z[n+1] = self.lam_z
             sol.F[n+1] = self.F
             sol.J[:, n+1] = self.J
-            sol.phi[:, n+1] = 1 - (1 - self.pars.physical["phi_0"]) / self.J
+            sol.phi[:, n+1] = 1 - (1 - self.pars.nondim["phi_0"]) / self.J
 
         return sol
 

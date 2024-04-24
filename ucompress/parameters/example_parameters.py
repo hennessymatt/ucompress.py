@@ -1,6 +1,6 @@
-from .base_parameters import BaseParameters
+from .base_parameters import DimensionalParameters, NonDimParameters
 
-class NeoHookean(BaseParameters):
+class NeoHookean(NonDimParameters):
     """
     An example non-dimensional parameter set for a neo-Hookean material
     """
@@ -11,13 +11,14 @@ class NeoHookean(BaseParameters):
         """
         Physical parameters.
         """
-        self.physical = {
+        self.nondim = {
             "R": 1,         # initial radius of sample
             "phi_0": 0.8,   # initial fluid fraction
             "k_0": 1,       # initial permeability
             "lam_z": 0.5,   # axial stretch
             "F": -5,        # force on the platten
             "G_m": 1,       # shear modulus of the matrix
+            "t_end": 10    # end-time of simulation
         }
 
         """
@@ -26,12 +27,11 @@ class NeoHookean(BaseParameters):
         self.computational = {
             "N": 40,            # number of spatial grid points
             "Nt": 100,          # number of time steps
-            "t_end": 10,        # end-time of simulation
             "t_spacing": 'log'  # lin or log spacing between time steps
         }
 
 
-class DimensionalNeoHookean(BaseParameters):
+class DimensionalNeoHookean(DimensionalParameters):
     """
     An example non-dimensional parameter set for a neo-Hookean material.
     Here the non-dim parameters are converted from a dimensional parameter
@@ -74,28 +74,10 @@ class DimensionalNeoHookean(BaseParameters):
         """
         Computes dicts of non-dim parameters
         """
-        self.non_dimensionalise()
-
-
-    def non_dimensionalise(self):
-        """
-        Carries out the non-dimensionalisation of all of the physical
-        parameters as well as the final simulation time
-        """
-        self.physical = {
-            "R": self.dimensional["R"] / self.scaling["space"],
-            "G_m": self.dimensional["G_m"] / self.scaling["stress"],
-            "k_0": self.dimensional["k_0"] / self.scaling["permeability"],
-            "phi_0": self.dimensional["phi_0"],
-            "lam_z": self.dimensional["lam_z"],
-            "F": self.dimensional["F"] / self.scaling["force"]
-        }
-
-        self.computational["t_end"] = self.dimensional["t_end"] / self.scaling["time"]
-        
+        self.non_dimensionalise()        
     
 
-class FibreReinforcedNH(BaseParameters):
+class FibreReinforcedNH(NonDimParameters):
     """
     An example non-dimensional parameter set for a fibre-reinforced 
     neo-Hookean material
@@ -116,7 +98,8 @@ class FibreReinforcedNH(BaseParameters):
             "F": -5,        # force on the platten
             "G_m": 1,       # shear modulus of the matrix
             "G_f": 100,     # shear modulus of the fibres
-            "alpha_f": 0.5  # volume fraction of fibres
+            "alpha_f": 0.5, # volume fraction of fibres
+            "t_end": 10,    # end-time of simulation
         }
 
         """
@@ -125,6 +108,5 @@ class FibreReinforcedNH(BaseParameters):
         self.computational = {
             "N": 40,            # number of spatial grid points
             "Nt": 100,          # number of time steps
-            "t_end": 10,        # end-time of simulation
             "t_spacing": 'log'  # lin or log spacing between time steps
         }

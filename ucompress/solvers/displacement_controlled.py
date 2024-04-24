@@ -19,7 +19,7 @@ class DisplacementControlled(Experiment):
         Computes the initial response of the sample
         """
 
-        self.lam_z = self.pars.physical["lam_z"]
+        self.lam_z = self.pars.nondim["lam_z"]
         self.lam_r = np.array([1 / np.sqrt(self.lam_z)])
         self.lam_t = np.array([1 / np.sqrt(self.lam_z)])
         self.u = (1 / np.sqrt(self.lam_z) - 1) * self.r

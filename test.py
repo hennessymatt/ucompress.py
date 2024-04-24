@@ -2,11 +2,13 @@ import matplotlib.pyplot as plt
 import ucompress as uc
 import numpy as np
 
-pars = uc.parameters.NeoHookean()
+pars = uc.parameters.example_parameters.NeoHookean()
+
+
 
 model = {
-    "mechanics": uc.mechanics.NeoHookean(pars.physical),
-    "permeability": uc.permeability.KozenyCarman(pars.physical),
+    "mechanics": uc.mechanics.NeoHookean(pars.nondim),
+    "permeability": uc.permeability.KozenyCarman(pars.nondim),
 }
 
 

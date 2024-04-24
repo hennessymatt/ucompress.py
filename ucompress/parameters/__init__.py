@@ -1,2 +1,3 @@
-from .base_parameters import BaseParameters
-from .example_parameters import NeoHookean, DimensionalNeoHookean, FibreReinforcedNH
+from .base_parameters import DimensionalParameters, NonDimParameters
+# import example_parameters
+from . import example_parameters
