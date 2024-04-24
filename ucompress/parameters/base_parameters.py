@@ -1,6 +1,48 @@
 import numpy as np
 
 
+class NonDimParameters():
+    """
+    A class to store non-dimension parameter values if these
+    are known.
+
+    The parameter attributes are split into two dictionaries:
+
+    dimensional:    dimensional parameter values
+    computational:  computational parameter values
+
+    The non-dimensional parameters must contain key/values for:
+
+    R:      the initial radius of the sample
+    G_m:    the shear modulus of the gel matrix
+    k_0:    the initial permeability
+    phi_0:  the initial porosity (fluid fraction)
+    lam_z:  for displacement-controlled experiments, this is the imposed
+            axial strain.  For force-controlled experiments, this is 
+            the initial guess of the axial strain
+    F:      for force-controlled experiments, this is the imposed force
+            on the upper platten.  For displacement-controlled experiments,
+            this value is not used and does not need to be assigned
+    t_end:  the time of the final time step
+
+    Of course, more parameters can be added to the above if needed by the 
+    model.
+    
+    The computational parameters must contain key/values for:
+    N:          the number of spatial grid points
+    Nt:         the number of time steps to compute the solution at
+    t_spacing:  either 'lin' or 'log'; determines whether to use linearly
+                or logarithmically spaced time steps
+
+    """
+
+    def __init__(self):
+        
+        # empty dicts to store the parameters
+        self.nondim = {}
+        self.computational = {}
+
+
 class DimensionalParameters():
     """
     A class to store dimensional parameter values for the problem.  
@@ -10,9 +52,11 @@ class DimensionalParameters():
 
     dimensional:    dimensional parameter values
     scalings:       scaling factors used to non-dimensionalise the
-                    parameters
-    nondim:         non-dimensionalised parameter values
-    computational:  computational parameter values
+                    parameters.  These are computed in the
+                    "compute_scaling_factors" method.
+    nondim:         non-dimensionalised parameter values.  These are
+                    computed in the non_dimensionalise method
+    computational:  computational parameter values assigned by the user.
 
     
     The dimensional/non-dimensional parameters must contain key/values for:
@@ -98,46 +142,3 @@ class DimensionalParameters():
 
         self.compute_scaling_factors()
         self.non_dimensionalise()
-
-
-
-class NonDimParameters():
-    """
-    A class to store non-dimension parameter values if these
-    are known
-
-    The parameter attributes are split into four dictionaries:
-
-    dimensional:    dimensional parameter values
-    computational:  computational parameter values
-
-    The non-dimensional parameters must contain key/values for:
-
-    R:      the initial radius of the sample
-    G_m:    the shear modulus of the gel matrix
-    k_0:    the initial permeability
-    phi_0:  the initial porosity (fluid fraction)
-    lam_z:  for displacement-controlled experiments, this is the imposed
-            axial strain.  For force-controlled experiments, this is 
-            the initial guess of the axial strain
-    F:      for force-controlled experiments, this is the imposed force
-            on the upper platten.  For displacement-controlled experiments,
-            this value is not used and does not need to be assigned
-    t_end:      the time of the final time step
-
-    Of course, more parameters can be added to the above if needed by the 
-    model.
-    
-    The computational parameters must contain key/values for:
-    N:          the number of spatial grid points
-    Nt:         the number of time steps to compute the solution at
-    t_spacing:  either 'lin' or 'log'; determines whether to use linearly
-                or logarithmically spaced time steps
-
-    """
-
-    def __init__(self):
-        
-        # empty dicts to store the parameters
-        self.nondim = {}
-        self.computational = {}
