@@ -7,12 +7,12 @@ pars = uc.parameters.example_parameters.NeoHookean()
 
 
 model = {
-    "mechanics": uc.mechanics.NeoHookean(pars.nondim),
-    "permeability": uc.permeability.KozenyCarman(pars.nondim),
+    "mechanics": uc.mechanics.NeoHookean(pars),
+    "permeability": uc.permeability.KozenyCarman(pars),
 }
 
 
-problem = uc.solvers.ForceControlled(model, pars)
+problem = uc.experiments.ForceControlled(model, pars)
 sol_instant = problem.initial_response()
 print(sol_instant.F)
 print(sol_instant.lam_z)

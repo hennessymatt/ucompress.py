@@ -1,6 +1,6 @@
 from .solution import Solution
 import numpy as np
-from ucompress.solvers.cheb import cheb
+from ucompress.experiments.cheb import cheb
 
 
 class Experiment():
