@@ -63,3 +63,14 @@ class Solution():
         self.F = self.F[:n]
         self.J = self.J[:, :n]
         self.phi = self.phi[:, :n]
+
+    def redimensionalise(self, pars):
+        """
+        Re-dimensionalises the output using the scaling factors contained
+        in the pars object
+        """
+
+        self.t *= pars.scaling["time"]
+        self.u *= pars.scaling["space"]
+        self.p *= pars.scaling["stress"]
+        self.F *- pars.scaling["force"]
