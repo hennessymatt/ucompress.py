@@ -133,8 +133,8 @@ class DimensionalParameters():
         the value of a dimensional parameter changes
         """
 
-        if par in self.nondim:
-            self.nondim[par] = val
+        if par in self.dimensional:
+            self.dimensional[par] = val
         elif par in self.computational:
             self.computational[par] = val
         else:
