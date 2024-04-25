@@ -28,7 +28,7 @@ class Solution():
             self.t = self.t[:Nt]
 
         # compute the spatial grid points
-        self.r = np.flip(np.cos(np.linspace(0, np.pi, N)))
+        self.r = (1 + np.flip(np.cos(np.linspace(0, np.pi, N)))) / 2
 
         # Preallocate NumPy arrays for solution components
         self.u = np.zeros((N, Nt + 1))
