@@ -27,6 +27,9 @@ class Solution():
         else:
             self.t = self.t[:Nt]
 
+        # compute the spatial grid points
+        self.r = np.flip(np.cos(np.linspace(0, np.pi, N)))
+
         # Preallocate NumPy arrays for solution components
         self.u = np.zeros((N, Nt + 1))
         self.p = np.zeros((N, Nt + 1))
@@ -71,6 +74,7 @@ class Solution():
         """
 
         self.t *= pars.scaling["time"]
+        self.r *= pars.scaling["space"]
         self.u *= pars.scaling["space"]
         self.p *= pars.scaling["stress"]
-        self.F *- pars.scaling["force"]
+        self.F *= pars.scaling["force"]
