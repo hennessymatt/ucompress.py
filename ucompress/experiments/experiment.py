@@ -20,7 +20,7 @@ class Experiment():
         self.preallocate()
 
         # set default solver options
-        self.opts = {
+        self.solver_opts = {
             "monitor_convergence": False, # monitor convergence of newton iterations
             "newton_max_iterations": 10, # maximum number of newton iterations
             "newton_tol": 1e-6 # newton convergence tolerance
@@ -121,7 +121,7 @@ class Experiment():
         """
 
         conv = False
-        for n in range(self.opts["newton_max_iterations"]):
+        for n in range(self.solver_opts["newton_max_iterations"]):
 
             # extract solution components
             self.u = X[self.ind_u]
@@ -140,11 +140,11 @@ class Experiment():
             # compute norm of residual
             nf = np.linalg.norm(self.FUN)
 
-            if self.opts["monitor_convergence"]:
+            if self.solver_opts["monitor_convergence"]:
                 print(f'norm(F) = {nf:.4e}')
 
             # check for convergence
-            if nf < self.opts["newton_tol"]:
+            if nf < self.solver_opts["newton_tol"]:
                 conv = True
                 break
 
@@ -189,7 +189,7 @@ class Experiment():
         # overwrite default solver options if user provides
         # their own
         if opts != None:
-            self.opts = opts
+            self.solver_opts = opts
 
         # initial condition
         self.u_old = np.zeros(self.N)
@@ -208,7 +208,7 @@ class Experiment():
 
         # begin time stepping
         for n in range(self.pars.computational["Nt"]):
-            if self.opts["monitor_convergence"]:
+            if self.solver_opts["monitor_convergence"]:
                 print(f'----solving iteration {n}----')
 
             # assign step size
