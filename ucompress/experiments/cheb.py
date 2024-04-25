@@ -6,24 +6,20 @@ def cheb(N):
     following the approach by Trefethen but with
     some modifications
     """
-
-    # my adjustment
-    N = N - 1
-
-    t = np.linspace(0, 1, N+1)
+    t = np.linspace(0, 1, N)
     x = np.cos(np.pi * t)
 
-    c = np.ones(N+1)
+    c = np.ones(N)
     c[0] = 2
-    c[N] = 2
+    c[N-1] = 2
 
-    c *= (-1) ** np.arange(N+1)
+    c *= (-1) ** np.arange(N)
 
-    X = np.tile(x, (N+1, 1)).T
+    X = np.tile(x, (N, 1)).T
 
     dX = X - X.T
 
-    D = np.outer(c, 1 / c) / (dX + np.eye(N+1))
+    D = np.outer(c, 1 / c) / (dX + np.eye(N))
     D -= np.diag(np.sum(D.T, axis=0))
 
     # my adjustment
