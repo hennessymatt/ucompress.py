@@ -164,7 +164,7 @@ class Experiment():
         return X, conv
     
 
-    def solve(self, opts = None):
+    def transient_response(self, opts = None):
         """
         Time steps the problem using the implicit Euler
         method. 
