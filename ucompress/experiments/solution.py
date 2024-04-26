@@ -36,7 +36,7 @@ class Solution():
         self.lam_z = np.ones(Nt + 1)
         self.F = np.zeros(Nt + 1)
         self.J = np.ones((N, Nt + 1))
-        self.phi = pars.nondim["phi_0"] * np.ones((N, Nt + 1))
+        self.phi = pars.physical["phi_0"] * np.ones((N, Nt + 1))
 
     def compute_times(self, pars):
         """
@@ -47,9 +47,9 @@ class Solution():
         # compute the time vector using logarithmic (log) or linear (lin)
         # spacing
         if pars.computational["t_spacing"] == 'log':
-            self.t = np.r_[0, np.logspace(-4, np.log10(pars.nondim["t_end"]), pars.computational["Nt"])]
+            self.t = np.r_[0, np.logspace(-4, np.log10(pars.physical["t_end"]), pars.computational["Nt"])]
         elif pars.computational["t_scaling"] == 'lin':
-            self.t = np.linspace(0, pars.nondim["t_end"], pars.computational["Nt"] + 1)
+            self.t = np.linspace(0, pars.physical["t_end"], pars.computational["Nt"] + 1)
         
         # compute the sizes of the time steps
         self.dt = np.diff(self.t)

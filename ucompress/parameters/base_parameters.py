@@ -1,65 +1,16 @@
-import numpy as np
-
-
-class NonDimParameters():
+class Parameters():
     """
-    A class to store non-dimension parameter values if these
-    are known.
+    A class to store parameter values for the problem.  
 
-    The parameter attributes are split into two dictionaries:
+    The parameter attributes are split into two main dictionaries:
 
-    dimensional:    dimensional parameter values
-    computational:  computational parameter values
-
-    The non-dimensional parameters must contain key/values for:
-
-    R:      the initial radius of the sample
-    G_m:    the shear modulus of the gel matrix
-    k_0:    the initial permeability
-    phi_0:  the initial porosity (fluid fraction)
-    lam_z:  for displacement-controlled experiments, this is the imposed
-            axial strain.  For force-controlled experiments, this is 
-            the initial guess of the axial strain
-    F:      for force-controlled experiments, this is the imposed force
-            on the upper platten.  For displacement-controlled experiments,
-            this value is not used and does not need to be assigned
-    t_end:  the time of the final time step
-
-    Of course, more parameters can be added to the above if needed by the 
-    model.
-    
-    The computational parameters must contain key/values for:
-    N:          the number of spatial grid points
-    Nt:         the number of time steps to compute the solution at
-    t_spacing:  either 'lin' or 'log'; determines whether to use linearly
-                or logarithmically spaced time steps
-
-    """
-
-    def __init__(self):
-        
-        # empty dicts to store the parameters
-        self.nondim = {}
-        self.computational = {}
-
-
-class DimensionalParameters():
-    """
-    A class to store dimensional parameter values for the problem.  
-    The parameter values must be in SI units.
-
-    The parameter attributes are split into four dictionaries:
-
-    dimensional:    dimensional parameter values
-    scalings:       scaling factors used to non-dimensionalise the
-                    parameters.  These are computed in the
-                    "compute_scaling_factors" method.
-    nondim:         non-dimensionalised parameter values.  These are
-                    computed in the non_dimensionalise method
+    physical:       parameter values associate with the physical system,
+                    e.g. the material or the experiment
+                    
     computational:  computational parameter values assigned by the user.
 
     
-    The dimensional/non-dimensional parameters must contain key/values for:
+    The dictionary of physical parameters *must* contain key/values for:
 
     R:      the initial radius of the sample
     G_m:    the shear modulus of the gel matrix
@@ -76,25 +27,31 @@ class DimensionalParameters():
     Of course, more parameters can be added to the above if needed by the 
     model.
     
-    The computational parameters must contain key/values for:
+    The dictionary of computational parameters must contain key/values for:
+
     N:          the number of spatial grid points
     Nt:         the number of time steps to compute the solution at
     t_spacing:  either 'lin' or 'log'; determines whether to use linearly
                 or logarithmically spaced time steps
 
+    If you are working with dimensional variables, then this class contains
+    methods for converting these to non-dimensional variables, which is
+    better for the solver.  There is also a method for updating non-dim
+    variables of a dimensional variable changes.
+
     """
     def __init__(self):
 
         # empty dicts to store physical and computational parameters
-        self.dimensional = {}
-        self.nondim = {}
+        self.physical = {}
         self.computational = {}
+
 
     def compute_scaling_factors(self):
         """"
         Computes the scaling factors that are needed when non-dimensionalising 
         a set of parameter values. These scaling factors are then stored as an
-        attribute in the form of a dictionary
+        attribute in the form of a dictionary.
         """
 
         space = self.dimensional["R"]
@@ -111,12 +68,18 @@ class DimensionalParameters():
             "force": force
         }
 
+
     def non_dimensionalise(self):
         """
         Carries out the non-dimensionalisation of all of the physical
-        parameters as well as the final simulation time
+        parameters as well as the final simulation time.  In its 
+        current form, this method only applies to simple neo-Hookean
+        materials.  This method will therefore have to be overloaded
+        if using a more complex model with extra parameters.
         """
-        self.nondim = {
+
+        # overwrite the physical dictionary with non-dim values
+        self.physical = {
             "R": self.dimensional["R"] / self.scaling["space"],
             "G_m": self.dimensional["G_m"] / self.scaling["stress"],
             "k_0": self.dimensional["k_0"] / self.scaling["permeability"],

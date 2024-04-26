@@ -58,7 +58,7 @@ class Mechanics():
         """
 
         # Copy the physical parameters dict and remove lam_z
-        pars = pars.nondim.copy()
+        pars = pars.physical.copy()
         pars.pop("lam_z")
 
         # Define the arguments of the NumPy function

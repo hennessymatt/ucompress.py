@@ -29,8 +29,8 @@ class Permeability():
         args = [self.J]
         translation = "numpy"
 
-        self.num_k = sp.lambdify(args, self.k.subs(pars.nondim), translation)
-        self.num_k_J = sp.lambdify(args, self.k_J.subs(pars.nondim), translation)
+        self.num_k = sp.lambdify(args, self.k.subs(pars.physical), translation)
+        self.num_k_J = sp.lambdify(args, self.k_J.subs(pars.physical), translation)
 
     def eval_permeability(self, J):
         """
