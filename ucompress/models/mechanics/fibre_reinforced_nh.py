@@ -11,7 +11,7 @@ class FibreReinforcedNH(Hyperelastic):
 
         # Definition of constants in the model as SymPy symbols
         self.G_m = sp.Symbol('G_m')
-        self.alpha = sp.Symbol('alpha')
+        self.alpha_f = sp.Symbol('alpha_f')
         self.G_f = sp.Symbol('G_f')
 
         # In-plane invariants
@@ -29,7 +29,7 @@ class FibreReinforcedNH(Hyperelastic):
             )
 
         # Total strain energy
-        self.W = (1 - self.alpha) * W_nH + self.alpha * W_f
+        self.W = (1 - self.alpha_f) * W_nH + self.alpha_f * W_f
 
         # Conversion dictionary (SymPy to SciPy)
         conversion_dict = {'elliptic_k': ellipk, 'elliptic_e': ellipe}
