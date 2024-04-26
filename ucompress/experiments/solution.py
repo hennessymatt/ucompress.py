@@ -37,6 +37,7 @@ class Solution():
         self.F = np.zeros(Nt + 1)
         self.J = np.ones((N, Nt + 1))
         self.phi = pars.physical["phi_0"] * np.ones((N, Nt + 1))
+        self.fluid_load_fraction = np.zeros(Nt + 1)
 
     def compute_times(self, pars):
         """
@@ -66,7 +67,8 @@ class Solution():
         self.F = self.F[:n]
         self.J = self.J[:, :n]
         self.phi = self.phi[:, :n]
-
+        self.fluid_load_fraction = self.fluid_load_fraction[:n]
+        
     def redimensionalise(self, pars):
         """
         Re-dimensionalises the output using the scaling factors contained

@@ -26,6 +26,7 @@ class DisplacementControlled(Experiment):
         S_r, _, _ = self.mech.eval_stress(self.lam_r, self.lam_t, self.lam_z)
         self.p = 1 / np.sqrt(self.lam_z) * S_r
         self.compute_force()
+        self.compute_fluid_load_fraction()
 
         # create a solution object for the initial response
         sol = Solution(self.pars, 0)
@@ -33,6 +34,7 @@ class DisplacementControlled(Experiment):
         sol.lam_z = self.lam_z
         sol.p = self.p
         sol.F = self.F
+        sol.fluid_load_fraction = self.fluid_load_fraction
 
         return sol
 

@@ -114,6 +114,16 @@ class Experiment():
 
         self.F = 2 * np.pi * np.sum(self.w * (S_z - self.p * self.lam_r * self.lam_t) * self.r)
 
+    def compute_fluid_load_fraction(self):
+        """
+        Computes the fluid load fraction, mathematically defined
+        as the area integral of p * J / lam_z divided by the
+        force F
+        """
+
+        self.fluid_load_fraction = -2 * np.pi * np.sum(
+            self.w * (self.p * self.lam_r * self.lam_t) * self.r
+            ) / self.F
 
     def newton_iterations(self, X):
         """
@@ -228,6 +238,9 @@ class Experiment():
                 self.compute_pressure()
                 self.compute_force()
 
+            # compute fluid load fraction
+            self.compute_fluid_load_fraction()
+
             # assign soln at previous time step
             self.u_old = X[0:self.N]
             self.lam_z_old = self.lam_z
@@ -240,6 +253,7 @@ class Experiment():
             sol.F[n+1] = self.F
             sol.J[:, n+1] = self.J
             sol.phi[:, n+1] = 1 - (1 - self.pars.physical["phi_0"]) / self.J
+            sol.fluid_load_fraction[n+1] = self.fluid_load_fraction
 
         return sol
 
