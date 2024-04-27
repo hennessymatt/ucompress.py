@@ -39,6 +39,19 @@ class Solution():
         self.phi = pars.physical["phi_0"] * np.ones((N, Nt + 1))
         self.fluid_load_fraction = np.zeros(Nt + 1)
 
+    def __str__(self):
+        output = (
+                    'Solution object with attributes\n'
+                  f'u: radial displacement.  NumPy array of size {np.size(self.u)}\n'
+                  f'p: fluid pressure.  NumPy array of size {np.size(self.p)}\n'
+                  f'F: force on the platten.  NumPy array of size {np.size(self.F)}\n'
+                  f'J: Jacobian determinant.  NumPy array of size {np.size(self.J)}\n'
+                  f'phi: porosity.  NumPy array of size {np.size(self.phi)}\n'
+                  f'fluid_load_fraction: fluid load fraction.  NumPy array of size {np.size(self.fluid_load_fraction)}'
+                  )
+
+        return output
+
     def compute_times(self, pars):
         """
         Computes a NumPy array of time points that are either
