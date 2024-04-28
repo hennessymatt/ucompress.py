@@ -42,12 +42,13 @@ class Solution():
     def __str__(self):
         output = (
                     'Solution object with attributes\n'
-                  f'u: radial displacement.  NumPy array of size {np.size(self.u)}\n'
-                  f'p: fluid pressure.  NumPy array of size {np.size(self.p)}\n'
-                  f'F: force on the platten.  NumPy array of size {np.size(self.F)}\n'
-                  f'J: Jacobian determinant.  NumPy array of size {np.size(self.J)}\n'
-                  f'phi: porosity.  NumPy array of size {np.size(self.phi)}\n'
-                  f'fluid_load_fraction: fluid load fraction.  NumPy array of size {np.size(self.fluid_load_fraction)}'
+                  f'u: radial displacement\n'
+                  f'p: fluid pressure\n'
+                  f'lam_z: axial stretch\n'
+                  f'F: force on the platten\n'
+                  f'J: Jacobian determinant\n'
+                  f'phi: porosity\n'
+                  f'fluid_load_fraction: fluid load fraction'
                   )
 
         return output
