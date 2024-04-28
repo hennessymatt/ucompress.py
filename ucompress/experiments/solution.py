@@ -42,6 +42,8 @@ class Solution():
     def __str__(self):
         output = (
                     'Solution object with attributes\n'
+                  f't: time\n'
+                  f'r: radial coordinate in the undeformed state\n'
                   f'u: radial displacement\n'
                   f'p: fluid pressure\n'
                   f'lam_z: axial stretch\n'
