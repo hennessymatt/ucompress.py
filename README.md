@@ -1,6 +1,6 @@
 # UnconfinedCompression
 
-Python code to simulate the unconfined compression of 
+Lightweight Python code for simulating the unconfined compression of 
 nonlinear poroelastic materials.  The poroelastic sample
 is assumed to remain cylindrical during compression.
 The code uses Chebyshev spectral differentiation 
@@ -13,5 +13,6 @@ Features of the code include:
 * Constant and deformation-dependent permeabilities
 
 The code uses SymPy to generate exact derivatives of 
-hyperelastic strain energies and permeabilities, so it is
-easy to extend and customise the material properties.
+hyperelastic strain energies and permeabilities. This makes it
+easy to extend and customise the material properties without
+having to manually update the entries in the Jacobian matrix.
