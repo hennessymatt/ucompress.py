@@ -2,4 +2,4 @@ from .neo_hookean import NeoHookean
 from .fibre_reinforced import FibreReinforced
 from .fibre_reinforced_invariants import FibreReinforcedInvariants
 from .fibre_reinforced_quad import FibreReinforcedQuad
-from .fibre_recruitment import FibreReinforcedRecruitment
+from .fibre_recruitment import FibreRecruitment

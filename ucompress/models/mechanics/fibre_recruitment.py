@@ -1,6 +1,6 @@
 from .base_mechanics import Hyperelastic, np, sp
 
-class FibreReinforcedRecruitment(Hyperelastic):
+class FibreRecruitment(Hyperelastic):
     """
     A class for fibre-reinforced neo-Hookean materials.  The model
     accounts for fibre recruitment.  The averaging of the fibre
