@@ -1,12 +1,16 @@
 from .base_mechanics import Hyperelastic, np, sp
 from scipy.special import ellipk, ellipe
 
-class FibreReinforcedNH(Hyperelastic):
+class FibreReinforcedInvariants(Hyperelastic):
     """
-    Class for our new model
+    Class for a fibre-reinforced neo-Hookean material.  The
+    averaging over the fibre angles is done exactly, resulting
+    in appearance of complete elliptic integrals in the
+    strain energy.  The strain energy is formulated in terms
+    of the invariants.
     """
-
-    def __init__(self, pars = {}):
+    
+    def __init__(self, pars = {}, formulation = "stretches"):
         super().__init__()
 
         # Definition of constants in the model as SymPy symbols
