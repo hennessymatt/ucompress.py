@@ -2,7 +2,9 @@ from .base_mechanics import Hyperelastic, np, sp
 
 class FibreReinforcedRecruitment(Hyperelastic):
     """
-    Class for our new model
+    A class for fibre-reinforced neo-Hookean materials.  The model
+    accounts for fibre recruitment.  The averaging of the fibre
+    orientation is carried out numerically using quadrature.
     """
 
     def __init__(self, pars = {}):
