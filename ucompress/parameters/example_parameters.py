@@ -112,3 +112,39 @@ class FibreReinforcedNH(Parameters):
             "Nt": 100,          # number of time steps
             "t_spacing": 'log'  # lin or log spacing between time steps
         }
+
+
+class FibreRecruitment(Parameters):
+    """
+    An example non-dimensional parameter set for a fibre-reinforced 
+    neo-Hookean material
+    """
+    def __init__(self):
+
+        super().__init__()
+
+        """
+        Physical parameters. 
+        """
+
+        self.physical = {
+            "R": 1,         # initial radius of sample
+            "phi_0": 0.8,   # initial fluid fraction
+            "k_0": 1,       # initial permeability
+            "lam_z": 0.5,   # axial stretch
+            "F": -5,        # force on the platten
+            "G_m": 1,       # shear modulus of the matrix
+            "E_f": 100,     # Young's modulus of the fibres
+            "lam_m": 1.2,   # Max recruitment stretch
+            "alpha_f": 0.5, # volume fraction of fibres
+            "t_end": 10,    # end-time of simulation
+        }
+
+        """
+        computational parameters
+        """
+        self.computational = {
+            "N": 40,            # number of spatial grid points
+            "Nt": 100,          # number of time steps
+            "t_spacing": 'log'  # lin or log spacing between time steps
+        }
