@@ -79,7 +79,7 @@ class DimensionalNeoHookean(Parameters):
         self.non_dimensionalise()        
     
 
-class FibreReinforcedNH(Parameters):
+class FibreReinforced(Parameters):
     """
     An example non-dimensional parameter set for a fibre-reinforced 
     neo-Hookean material
