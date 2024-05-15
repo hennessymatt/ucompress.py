@@ -13,7 +13,8 @@ class Parameters():
     The dictionary of physical parameters *must* contain key/values for:
 
     R:      the initial radius of the sample
-    G_m:    the shear modulus of the gel matrix
+    E_m:    the Young's modulus of the gel matrix
+    nu_m:   the Poisson's ratio of the gel matrix
     k_0:    the initial permeability
     phi_0:  the initial porosity (fluid fraction)
     lam_z:  for displacement-controlled experiments, this is the imposed
@@ -55,7 +56,7 @@ class Parameters():
         """
 
         space = self.dimensional["R"]
-        stress = self.dimensional["G_m"]
+        stress = self.dimensional["E_m"]
         permeability = self.dimensional["k_0"]
         time = space**2 / stress / permeability
         force = stress * space**2
@@ -81,7 +82,7 @@ class Parameters():
         # overwrite the physical dictionary with non-dim values
         self.physical = {
             "R": self.dimensional["R"] / self.scaling["space"],
-            "G_m": self.dimensional["G_m"] / self.scaling["stress"],
+            "E_m": self.dimensional["E_m"] / self.scaling["stress"],
             "k_0": self.dimensional["k_0"] / self.scaling["permeability"],
             "phi_0": self.dimensional["phi_0"],
             "lam_z": self.dimensional["lam_z"],

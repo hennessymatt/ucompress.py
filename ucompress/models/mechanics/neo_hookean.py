@@ -11,10 +11,15 @@ class NeoHookean(Hyperelastic):
         super().__init__()
 
         # Definition of constants in the model as SymPy symbols
-        self.G_m = sp.Symbol('G_m')
+        self.E_m = sp.Symbol('E_m')
+        self.nu_m = sp.Symbol('mu_m')
+
+        # Converting E and nu into mu and lambda
+        G = self.E_m / 2 / (1 + self.nu_m)
+        lam = 2 * G * self.nu_m / (1 - 2 * self.nu_m)
 
         # Hyperelastic strain energy
-        self.W = self.G_m/2 * (self.I_1 - 2 * sp.log(self.J))
+        self.W = G / 2 * (self.I_1 - 3 - 2 * sp.log(self.J)) + lam / 2 * (self.J - 1)**2
 
         # Use SymPy to compute the stresses and their derivatives
         self.compute_stress()

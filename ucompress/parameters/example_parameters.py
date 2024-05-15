@@ -17,7 +17,8 @@ class NeoHookean(Parameters):
             "k_0": 1,       # initial permeability
             "lam_z": 0.5,   # axial stretch
             "F": -5,        # force on the platten
-            "G_m": 1,       # shear modulus of the matrix
+            "E_m": 1,       # shear modulus of the matrix
+            "nu_m": 0,      # Poisson's ratio of the matrix
             "t_end": 10    # end-time of simulation
         }
 
@@ -48,7 +49,8 @@ class DimensionalNeoHookean(Parameters):
         """
         self.dimensional = {
             "R": 5e-3,        # initial radius (m)
-            "G_m": 50e3,      # stiffness of gel matrix (Pa)
+            "E_m": 50e3,      # stiffness of gel matrix (Pa)
+            "nu_m": 0,        # Poisson's ratio of the material
             "k_0": 2e-13,     # initial hydraulic conductivity (m2 / Pa / s)
             "phi_0": 0.8,     # initial porosity (-)
             "lam_z": 0.5,     # axial strain (-)
