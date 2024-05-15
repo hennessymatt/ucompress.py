@@ -1,6 +1,6 @@
 from .solution import Solution
 from .experiment import Experiment, np
-from scipy.optimize import root_scalar
+from scipy.optimize import root_scalar, root
 
 class ForceControlled(Experiment):
     """
@@ -73,6 +73,49 @@ class ForceControlled(Experiment):
         sol = Solution(self.pars, 0)
         sol.u = self.u
         sol.lam_z = self.lam_z
+        sol.p = self.p
+        sol.F = self.F
+        sol.fluid_load_fraction = self.fluid_load_fraction
+
+        return sol
+
+    def steady_response(self):
+        """
+        Computes the steady-state response
+        """
+
+        # helper function for solving the nonlinear problem for
+        # the steady response
+        def fun(X):
+            self.lam_r = X[0]
+            self.lam_t = X[0]
+            self.lam_z = X[1]
+            self.p = 0
+            S_r, _, S_z = self.mech.eval_stress(self.lam_r, self.lam_r, self.lam_z)
+            self.compute_force()
+            
+            return np.array([
+                S_r,
+                self.pars.physical["F"] - self.F
+            ])
+        
+        # solve the nonlinear scalar equation for the axial stretch
+        steady_sol = root(fun, x0 = np.array([1.1, self.pars.physical["lam_z"]]))
+    
+        # check if the solver converged
+        if steady_sol.success == True:
+            fun(steady_sol.x)
+        else:
+            print('ERROR: solver for initial response did not converge')
+            return
+        
+        # compute fluid load fraction
+        self.compute_fluid_load_fraction()
+
+        # create a solution object and store the solution
+        sol = Solution(self.pars, 0)
+        sol.u = steady_sol.x[0] * sol.r
+        sol.lam_z = steady_sol.x[1]
         sol.p = self.p
         sol.F = self.F
         sol.fluid_load_fraction = self.fluid_load_fraction
