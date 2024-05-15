@@ -11,7 +11,8 @@ class FibreRecruitment(Hyperelastic):
         super().__init__()
 
         # Definition of constants in the model as SymPy symbols
-        self.G_m = sp.Symbol('G_m')
+        self.E_m = sp.Symbol('E_m')
+        self.nu_m = sp.Symbol('nu_m')
         self.alpha_f = sp.Symbol('alpha_f')
         self.E_f = sp.Symbol('E_f')
         self.lam_m = sp.Symbol('lam_m')
@@ -22,7 +23,9 @@ class FibreRecruitment(Hyperelastic):
         self.Theta = 2 * sp.pi * self.k / self.N
 
         # Strain energy of the neo-Hookean matrix
-        W_nH = self.G_m / 2 * (self.I_1 - 2 * sp.log(self.J))
+        G_m = self.E_m / 2 / (1 + self.nu_m)
+        l_m = 2 * G_m * self.nu_m / (1 - 2 * self.nu_m)
+        W_m = G_m / 2 * (self.I_1 - 3 - 2 * sp.log(self.J)) + l_m / 2 * (self.J - 1)**2
 
         # Subtract off a small amount from lam_t to ensure lam_r > lam_t, 
         # which prevents singularities when lam_r \simeq lam_t
@@ -43,7 +46,7 @@ class FibreRecruitment(Hyperelastic):
         W_f = sp.Piecewise((0, lam_c < 1), (F, sp.And(1 < lam_c, lam_c < self.lam_m)), (G, lam_c > self.lam_m))
 
         # Total strain energy
-        self.W = (1 - self.alpha_f) * W_nH + self.alpha_f * W_f
+        self.W = (1 - self.alpha_f) * W_m + self.alpha_f * W_f
 
         # compute stresses, stress derivatives, and convert to NumPy expressions
         self.compute_stress()

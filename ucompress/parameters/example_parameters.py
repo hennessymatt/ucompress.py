@@ -120,7 +120,7 @@ class FibreReinforced(Parameters):
 class FibreRecruitment(Parameters):
     """
     An example non-dimensional parameter set for a fibre-reinforced 
-    neo-Hookean material
+    neo-Hookean material with recruitment stretches
     """
     def __init__(self):
 
@@ -136,7 +136,8 @@ class FibreRecruitment(Parameters):
             "k_0": 1,       # initial permeability
             "lam_z": 0.5,   # axial stretch
             "F": -5,        # force on the platten
-            "G_m": 1,       # shear modulus of the matrix
+            "E_m": 1,       # shear modulus of the matrix
+            "nu_m": 0,      # Poisson's ratio of the matrix
             "E_f": 100,     # Young's modulus of the fibres
             "lam_m": 1.2,   # Max recruitment stretch
             "alpha_f": 0.5, # volume fraction of fibres
