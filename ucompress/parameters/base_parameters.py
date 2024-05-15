@@ -83,6 +83,7 @@ class Parameters():
         self.physical = {
             "R": self.dimensional["R"] / self.scaling["space"],
             "E_m": self.dimensional["E_m"] / self.scaling["stress"],
+            "nu_m": self.dimensional["nu_m"],
             "k_0": self.dimensional["k_0"] / self.scaling["permeability"],
             "phi_0": self.dimensional["phi_0"],
             "lam_z": self.dimensional["lam_z"],
