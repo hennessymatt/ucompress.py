@@ -14,27 +14,33 @@ class FibreReinforced(Hyperelastic):
         super().__init__()
 
         # Definition of constants in the model as SymPy symbols
-        self.G_m = sp.Symbol('G_m')
+        self.E_m = sp.Symbol('E_m')
+        self.nu_m = sp.Symbol('nu_m')
         self.alpha_f = sp.Symbol('alpha_f')
-        self.G_f = sp.Symbol('G_f')
+        self.E_f = sp.Symbol('E_f')
+
+        # Converting E_m and nu_m into mu_m and l_m
+        G_m = self.E_m / 2 / (1 + self.nu_m)
+        l_m = 2 * G_m * self.nu_m / (1 - 2 * self.nu_m)
+
+        # Hyperelastic strain energy of the matrix
+        W_m = G_m / 2 * (self.I_1 - 3 - 2 * sp.log(self.J)) + l_m / 2 * (self.J - 1)**2
+
 
         # In-plane invariants
         I_1_x = self.lam_r**2 + self.lam_t**2
-
-        # Strain energy of the neo-Hookean matrix
-        W_nH = self.G_m / 2 * (self.I_1 - 2 * sp.log(self.J))
 
         # Subtract off a small amount from lam_t to ensure lam_r > lam_t, 
         # which prevents singularities when lam_r \simeq lam_t
         lam_t = self.lam_t - 1e-4
 
         # Strain energy of the fibres
-        W_f = self.G_f / 4 * (
-            I_1_x + 8 / sp.pi / self.lam_r * sp.elliptic_k(1 - lam_t**2 / self.lam_r**2) - 6
+        W_f = self.E_f / 4 * (
+            I_1_x - 8 * self.lam_r / sp.pi * sp.elliptic_e(1 - lam_t**2 / self.lam_r**2) + 2
             )
 
         # Total strain energy
-        self.W = (1 - self.alpha_f) * W_nH + self.alpha_f * W_f
+        self.W = (1 - self.alpha_f) * W_m + self.alpha_f * W_f
 
         # Conversion dictionary (SymPy to SciPy)
         conversion_dict = {'elliptic_k': ellipk, 'elliptic_e': ellipe}

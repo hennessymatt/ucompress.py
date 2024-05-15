@@ -100,8 +100,9 @@ class FibreReinforced(Parameters):
             "k_0": 1,       # initial permeability
             "lam_z": 0.5,   # axial stretch
             "F": -5,        # force on the platten
-            "G_m": 1,       # shear modulus of the matrix
-            "G_f": 100,     # shear modulus of the fibres
+            "E_m": 1,       # shear modulus of the matrix
+            "nu_m": 0,      # Poisson's ratio of the matrix
+            "E_f": 100,     # shear modulus of the fibres
             "alpha_f": 0.5, # volume fraction of fibres
             "t_end": 10,    # end-time of simulation
         }
