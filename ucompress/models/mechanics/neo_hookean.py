@@ -12,7 +12,7 @@ class NeoHookean(Hyperelastic):
 
         # Definition of constants in the model as SymPy symbols
         self.E_m = sp.Symbol('E_m')
-        self.nu_m = sp.Symbol('mu_m')
+        self.nu_m = sp.Symbol('nu_m')
 
         # Converting E and nu into mu and lambda
         G = self.E_m / 2 / (1 + self.nu_m)
