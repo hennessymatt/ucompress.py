@@ -7,7 +7,7 @@ class FibreRecruitment(Hyperelastic):
     orientation is carried out numerically using quadrature.
     """
 
-    def __init__(self, pars = {}):
+    def __init__(self, pars = {}, distribution = 'triangle'):
         super().__init__()
 
         # Definition of constants in the model as SymPy symbols
@@ -15,7 +15,6 @@ class FibreRecruitment(Hyperelastic):
         self.nu_m = sp.Symbol('nu_m')
         self.alpha_f = sp.Symbol('alpha_f')
         self.E_f = sp.Symbol('E_f')
-        self.lam_m = sp.Symbol('lam_m')
 
         # Integration parameters
         self.k = sp.Symbol('k')
@@ -33,17 +32,58 @@ class FibreRecruitment(Hyperelastic):
 
         # Compute the stretch and its mean
         lam = sp.sqrt(self.lam_r**2 * sp.cos(self.Theta)**2 + lam_t**2 * sp.sin(self.Theta)**2)
-        lam_c = self.average(lam)
+        Lam = self.average(lam)
 
         # Compute the parts of the fibre strain energy
-        tmp = 3 * self.lam_m**2 + 4 * self.lam_m + 3
-        f = self.E_f / 2 * ((lam-1)**4 * (5 * self.lam_m - 2 * lam - 3) / (self.lam_m-1)**3 / tmp)
-        g = self.E_f / 2 * (10 * lam * (lam - self.lam_m - 1) / tmp + 1)
-        F = self.average(f)
-        G = self.average(g)
 
-        # Final averaged strain energy of the fibres
-        W_f = sp.Piecewise((0, lam_c < 1), (F, sp.And(1 < lam_c, lam_c < self.lam_m)), (G, lam_c > self.lam_m))
+        if distribution == 'triangle':
+                
+            lam_a = sp.Symbol('lam_a')
+            lam_b = sp.Symbol('lam_b')
+            lam_c = sp.Symbol('lam_c')
+
+            A = sp.Piecewise(
+                (0, Lam < lam_a),
+                (-lam_a**2 / (lam_b - lam_a) / (lam_c - lam_a), sp.And(lam_a < Lam, Lam < lam_c)),
+                (lam_c**2 / (lam_c - lam_a) / (lam_b - lam_c) - lam_a**2  / (lam_b - lam_a) / (lam_c - lam_a), sp.And(lam_c < Lam, Lam < lam_b)),
+                (-1, Lam > lam_b)
+            )
+
+            B = sp.Piecewise(
+                (0, Lam < lam_a),
+                (2 * lam_a * sp.log(lam_a) / (lam_b - lam_a) / (lam_c - lam_a), sp.And(lam_a < Lam, Lam < lam_c)),
+                (2 * lam_a * sp.log(lam_a) / (lam_b - lam_a) / (lam_c - lam_a) - 2 * lam_c * sp.log(lam_c) / (lam_c - lam_a) / (lam_b - lam_c), sp.And(lam_c < Lam, Lam < lam_b)),
+                (2 * lam_a * sp.log(lam_a) / (lam_b - lam_a) / (lam_c - lam_a) - 2 * lam_c * sp.log(lam_c) / (lam_c - lam_a) / (lam_b - lam_c) + 2 * lam_b * sp.log(lam_b) / (lam_b - lam_a) / (lam_b - lam_c), Lam > lam_b)
+            )
+
+            C = sp.Piecewise(
+                (0, Lam < lam_a),
+                (1 / (lam_b - lam_a) / (lam_c - lam_a), sp.And(lam_a < Lam, Lam < lam_c)),
+                (-1 / (lam_b - lam_a) / (lam_b - lam_c), sp.And(lam_c < Lam, Lam < lam_b)),
+                (0, Lam > lam_b)
+            )
+
+            D = sp.Piecewise(
+                (0, Lam < lam_a),
+                (-2 * lam_a / (lam_b - lam_a) / (lam_c - lam_a), sp.And(lam_a < Lam, Lam < lam_c)),
+                (2 * lam_b / (lam_b - lam_a) / (lam_b - lam_c), sp.And(lam_c < Lam, Lam < lam_b)),
+                (0, Lam > lam_b)
+            )
+
+            W_f = self.E_f * (A * sp.log(Lam) + (B - D) * Lam + C / 2 * Lam**2 + D * Lam * sp.log(Lam))
+
+        elif distribution == 'quartic':
+            lam_m = sp.Symbol('lam_m')
+
+            tmp = 3 * lam_m**2 + 4 * lam_m + 3
+            f = self.E_f / 2 * ((lam-1)**4 * (5 * lam_m - 2 * lam - 3) / (lam_m-1)**3 / tmp)
+            g = self.E_f / 2 * (10 * lam * (lam - lam_m - 1) / tmp + 1)
+            F = self.average(f)
+            G = self.average(g)
+
+            # Final averaged strain energy of the fibres
+            W_f = sp.Piecewise((0, Lam < 1), (F, sp.And(1 < Lam, Lam < lam_m)), (G, Lam > lam_m))
+
 
         # Total strain energy
         self.W = (1 - self.alpha_f) * W_m + self.alpha_f * W_f
