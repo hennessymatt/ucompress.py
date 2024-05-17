@@ -7,7 +7,7 @@ class FibreRecruitment(Hyperelastic):
     orientation is carried out numerically using quadrature.
     """
 
-    def __init__(self, pars = {}, distribution = 'triangle'):
+    def __init__(self, pars = {}, distribution = 'linear'):
         super().__init__()
 
         # Definition of constants in the model as SymPy symbols
@@ -42,35 +42,29 @@ class FibreRecruitment(Hyperelastic):
             lam_b = sp.Symbol('lam_b')
             lam_c = sp.Symbol('lam_c')
 
-            A = sp.Piecewise(
+            w1 = ((2 * Lam ** 2 + 4 * Lam * lam_a) * sp.log(Lam) + (-2 * Lam ** 2 - 4 * Lam * lam_a) * sp.log(lam_a) + (lam_a + 5 * Lam) * (lam_a - Lam)) / (-lam_b + lam_a) / (-lam_c + lam_a)
+            w2 = (4 * (-lam_c + lam_a) * (lam_b + Lam / 2) * Lam * sp.log(Lam) - 4 * (lam_b - lam_c) * (lam_a + Lam / 2) * Lam * sp.log(lam_a) - 4 * (lam_c + Lam / 2) * (-lam_b + lam_a) * Lam * sp.log(lam_c) + (-lam_c + lam_a) * ((lam_b - lam_c) * lam_a + lam_c * lam_b + 4 * Lam * lam_b - 5 * Lam ** 2)) / (-lam_c + lam_a) / (-lam_b + lam_a) / (lam_b - lam_c)
+            w3 = (-4 * (lam_b - lam_c) * (lam_a + Lam / 2) * Lam * sp.log(lam_a) + 4 * (lam_b + Lam / 2) * (-lam_c + lam_a) * Lam * sp.log(lam_b) + (-lam_b + lam_a) * ((-2 * Lam ** 2 - 4 * Lam * lam_c) * sp.log(lam_c) + (lam_b - lam_c) * (-lam_c + lam_a))) / (-lam_c + lam_a) / (-lam_b + lam_a) / (lam_b - lam_c)
+
+
+            W_f = self.E_f / 2 * sp.Piecewise(
                 (0, Lam < lam_a),
-                (-lam_a**2 / (lam_b - lam_a) / (lam_c - lam_a), sp.And(lam_a < Lam, Lam < lam_c)),
-                (lam_c**2 / (lam_c - lam_a) / (lam_b - lam_c) - lam_a**2  / (lam_b - lam_a) / (lam_c - lam_a), sp.And(lam_c < Lam, Lam < lam_b)),
-                (-1, Lam > lam_b)
+                (w1, sp.And(lam_a < Lam, Lam < lam_c)),
+                (w2, sp.And(lam_c < Lam, Lam < lam_b)),
+                (w3, Lam > lam_b)
             )
 
-            B = sp.Piecewise(
-                (0, Lam < lam_a),
-                (2 * lam_a * sp.log(lam_a) / (lam_b - lam_a) / (lam_c - lam_a), sp.And(lam_a < Lam, Lam < lam_c)),
-                (2 * lam_a * sp.log(lam_a) / (lam_b - lam_a) / (lam_c - lam_a) - 2 * lam_c * sp.log(lam_c) / (lam_c - lam_a) / (lam_b - lam_c), sp.And(lam_c < Lam, Lam < lam_b)),
-                (2 * lam_a * sp.log(lam_a) / (lam_b - lam_a) / (lam_c - lam_a) - 2 * lam_c * sp.log(lam_c) / (lam_c - lam_a) / (lam_b - lam_c) + 2 * lam_b * sp.log(lam_b) / (lam_b - lam_a) / (lam_b - lam_c), Lam > lam_b)
-            )
+        elif distribution == 'linear':
+            lam_m = sp.Symbol('lam_m')
 
-            C = sp.Piecewise(
-                (0, Lam < lam_a),
-                (1 / (lam_b - lam_a) / (lam_c - lam_a), sp.And(lam_a < Lam, Lam < lam_c)),
-                (-1 / (lam_b - lam_a) / (lam_b - lam_c), sp.And(lam_c < Lam, Lam < lam_b)),
-                (0, Lam > lam_b)
+            w2 = ((-2 * Lam ** 2 - 4 * Lam * lam_m) * sp.log(Lam) + (2 * lam_m + 3) * Lam ** 2 - 4 * Lam - 2 * lam_m + 1) / (lam_m - 1) ** 2
+            w3 = ((-2 * Lam ** 2 - 4 * Lam * lam_m) * sp.log(lam_m) + (lam_m - 1) * (2 * Lam ** 2 + 4 * Lam + lam_m - 1)) / (lam_m - 1) ** 2
+            
+            W_f = self.E_f / 2 * sp.Piecewise(
+                (0, Lam < 1),
+                (w2, sp.And(1 < Lam, Lam < lam_m)),
+                (w3, Lam > lam_m)
             )
-
-            D = sp.Piecewise(
-                (0, Lam < lam_a),
-                (-2 * lam_a / (lam_b - lam_a) / (lam_c - lam_a), sp.And(lam_a < Lam, Lam < lam_c)),
-                (2 * lam_b / (lam_b - lam_a) / (lam_b - lam_c), sp.And(lam_c < Lam, Lam < lam_b)),
-                (0, Lam > lam_b)
-            )
-
-            W_f = self.E_f * (A * sp.log(Lam) + (B - D) * Lam + C / 2 * Lam**2 + D * Lam * sp.log(Lam))
 
         elif distribution == 'quartic':
             lam_m = sp.Symbol('lam_m')
