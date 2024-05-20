@@ -30,40 +30,45 @@ class FibreRecruitment(Hyperelastic):
         # which prevents singularities when lam_r \simeq lam_t
         lam_t = self.lam_t - 1e-4
 
-        # Compute the stretch and its mean
+        # Compute the stretch and its mean over all angles
         lam = sp.sqrt(self.lam_r**2 * sp.cos(self.Theta)**2 + lam_t**2 * sp.sin(self.Theta)**2)
         Lam = self.average(lam)
 
-        # Compute the parts of the fibre strain energy
-
+        # Compute the contribution to the energy from the fibres
         if distribution == 'triangle':
                 
             lam_a = sp.Symbol('lam_a')
             lam_b = sp.Symbol('lam_b')
             lam_c = sp.Symbol('lam_c')
 
-            w1 = ((2 * Lam ** 2 + 4 * Lam * lam_a) * sp.log(Lam) + (-2 * Lam ** 2 - 4 * Lam * lam_a) * sp.log(lam_a) + (lam_a + 5 * Lam) * (lam_a - Lam)) / (-lam_b + lam_a) / (-lam_c + lam_a)
-            w2 = (4 * (-lam_c + lam_a) * (lam_b + Lam / 2) * Lam * sp.log(Lam) - 4 * (lam_b - lam_c) * (lam_a + Lam / 2) * Lam * sp.log(lam_a) - 4 * (lam_c + Lam / 2) * (-lam_b + lam_a) * Lam * sp.log(lam_c) + (-lam_c + lam_a) * ((lam_b - lam_c) * lam_a + lam_c * lam_b + 4 * Lam * lam_b - 5 * Lam ** 2)) / (-lam_c + lam_a) / (-lam_b + lam_a) / (lam_b - lam_c)
-            w3 = (-4 * (lam_b - lam_c) * (lam_a + Lam / 2) * Lam * sp.log(lam_a) + 4 * (lam_b + Lam / 2) * (-lam_c + lam_a) * Lam * sp.log(lam_b) + (-lam_b + lam_a) * ((-2 * Lam ** 2 - 4 * Lam * lam_c) * sp.log(lam_c) + (lam_b - lam_c) * (-lam_c + lam_a))) / (-lam_c + lam_a) / (-lam_b + lam_a) / (lam_b - lam_c)
+            w1 = ((2 * lam ** 2 + 4 * lam * lam_a) * sp.log(lam) + (-2 * lam ** 2 - 4 * lam * lam_a) * sp.log(lam_a) + (lam_a + 5 * lam) * (lam_a - lam)) / (-lam_c + lam_a) / (-lam_b + lam_a)
+            w2 = (4 * (-lam_c + lam_a) * lam * (lam_b + lam / 2) * sp.log(lam) - 4 * lam * (lam_a + lam / 2) * (lam_b - lam_c) * sp.log(lam_a) - 4 * (-lam_b + lam_a) * lam * (lam_c + lam / 2) * sp.log(lam_c) + (-lam_c + lam_a) * ((lam_b - lam_c) * lam_a + lam_b * lam_c + 4 * lam * lam_b - 5 * lam ** 2)) / (-lam_b + lam_a) / (-lam_c + lam_a) / (lam_b - lam_c)
+            w3 = (-4 * lam * (lam_a + lam / 2) * (lam_b - lam_c) * sp.log(lam_a) + 4 * (-lam_c + lam_a) * lam * (lam_b + lam / 2) * sp.log(lam_b) + (-lam_b + lam_a) * ((-2 * lam ** 2 - 4 * lam * lam_c) * sp.log(lam_c) + (lam_b - lam_c) * (-lam_c + lam_a))) / (-lam_b + lam_a) / (-lam_c + lam_a) / (lam_b - lam_c)
 
+            W1 = self.average(w1)
+            W2 = self.average(W2)
+            W3 = self.average(w3)
 
             W_f = self.E_f / 2 * sp.Piecewise(
                 (0, Lam < lam_a),
-                (w1, sp.And(lam_a < Lam, Lam < lam_c)),
-                (w2, sp.And(lam_c < Lam, Lam < lam_b)),
-                (w3, Lam > lam_b)
+                (W1, sp.And(lam_a < Lam, Lam < lam_c)),
+                (W2, sp.And(lam_c < Lam, Lam < lam_b)),
+                (W3, Lam > lam_b)
             )
 
         elif distribution == 'linear':
             lam_m = sp.Symbol('lam_m')
 
-            w2 = ((-2 * Lam ** 2 - 4 * Lam * lam_m) * sp.log(Lam) + (2 * lam_m + 3) * Lam ** 2 - 4 * Lam - 2 * lam_m + 1) / (lam_m - 1) ** 2
-            w3 = ((-2 * Lam ** 2 - 4 * Lam * lam_m) * sp.log(lam_m) + (lam_m - 1) * (2 * Lam ** 2 + 4 * Lam + lam_m - 1)) / (lam_m - 1) ** 2
-            
+            w2 = ((-2 * lam ** 2 - 4 * lam * lam_m) * sp.log(lam) + (2 * lam_m + 3) * lam ** 2 - 4 * lam - 2 * lam_m + 1) / (lam_m - 1) ** 2
+            w3 = ((-2 * lam ** 2 - 4 * lam * lam_m) * sp.log(lam_m) + (lam_m - 1) * (2 * lam ** 2 + 4 * lam + lam_m - 1)) / (lam_m - 1) ** 2
+
+            W2 = self.average(w2)
+            W3 = self.average(w3)
+
             W_f = self.E_f / 2 * sp.Piecewise(
                 (0, Lam < 1),
-                (w2, sp.And(1 < Lam, Lam < lam_m)),
-                (w3, Lam > lam_m)
+                (W2, sp.And(1 < Lam, Lam < lam_m)),
+                (W3, Lam > lam_m)
             )
 
         elif distribution == 'quartic':
@@ -77,6 +82,9 @@ class FibreRecruitment(Hyperelastic):
 
             # Final averaged strain energy of the fibres
             W_f = sp.Piecewise((0, Lam < 1), (F, sp.And(1 < Lam, Lam < lam_m)), (G, Lam > lam_m))
+
+        else:
+            raise Exception('ERROR: Unknown recruitment distribution')
 
 
         # Total strain energy
@@ -92,7 +100,7 @@ class FibreRecruitment(Hyperelastic):
         """
         Computes the average over fibre angles using trapezoidal
         integration following Trefethen and Weideman, SIAM Review,
-        Vol 56, No. 3, pp. 385–458, 2014
+        Vol 56, No. 3, pp. 385-458, 2014
         """
         return 4 / self.N * (sp.summation(f, (self.k, 0, int(self.N/4))) - 
                             1/2 * f.subs(self.k, 0) - 1/2 * f.subs(self.k, int(self.N/4))
