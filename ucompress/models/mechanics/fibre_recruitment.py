@@ -90,11 +90,8 @@ class FibreRecruitment(Hyperelastic):
         # Total strain energy
         self.W = (1 - self.alpha_f) * W_m + self.alpha_f * W_f
 
-        # compute stresses, stress derivatives, and convert to NumPy expressions
-        self.compute_stress()
-        self.stress_derivatives()
-        self.lambdify(pars)
-
+        # Build the model
+        self.build()
     
     def average(self, f):
         """

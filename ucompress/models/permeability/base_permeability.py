@@ -16,6 +16,14 @@ class Permeability():
         # define Eulerian porosity
         self.phi = 1 - (1 - self.phi_0) / self.J
 
+    def build(self):
+        """
+        Builds the symbolic model.  For the permeability, this means
+        computing the derivatives.  We use this method for consistency
+        with the other parts of the model.
+        """
+        self.compute_derivatives()
+
     def compute_derivatives(self):
         """
         Method to compute derivatives of the permeability wrt state variables

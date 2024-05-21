@@ -7,7 +7,7 @@ class KozenyCarman(Permeability):
     for the exponents.
     """
 
-    def __init__(self, pars):
+    def __init__(self):
         """
         Constructor
         """
@@ -16,8 +16,5 @@ class KozenyCarman(Permeability):
         # Eulerian permeability
         self.k = self.k_0 * (1 - self.phi_0)**2 / self.phi_0**3 * self.phi**3 / (1 - self.phi)**2
         
-        # compute derivatives of the Lagrangian permeability
-        self.compute_derivatives()
-
-        # convert SymPy to NumPy
-        self.lambdify(pars)
+        # Build the model
+        self.build()

@@ -9,7 +9,7 @@ class Constant(Permeability):
     returns a NumPy array with the same length of u
     """
 
-    def __init__(self, pars):
+    def __init__(self):
         """
         Constructor
         """
@@ -18,11 +18,8 @@ class Constant(Permeability):
         # Eulerian permeability
         self.k = self.k_0
         
-        # compute derivatives of the Lagrangian permeability
-        self.compute_derivatives()
-
-        # convert SymPy to NumPy
-        self.lambdify(pars)
+        # Build the permeability model
+        self.build()
 
     def eval_permeability(self, J):
         """

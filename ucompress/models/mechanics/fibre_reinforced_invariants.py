@@ -35,13 +35,13 @@ class FibreReinforcedInvariants(Hyperelastic):
         # Total strain energy
         self.W = (1 - self.alpha_f) * W_nH + self.alpha_f * W_f
 
-        # Conversion dictionary (SymPy to SciPy)
-        conversion_dict = {'elliptic_k': ellipk, 'elliptic_e': ellipe}
+        # Update conversion dictionary (SymPy to SciPy)
+        self.conversion_dict = {'elliptic_k': ellipk, 'elliptic_e': ellipe}
 
         # compute stresses, stress derivatives, and convert to NumPy expressions
         self.compute_stress()
         self.stress_derivatives()
-        self.lambdify(pars, conversion_dict = conversion_dict)
+        self.lambdify(pars)
 
     
     def eval_stress_derivatives(self, lam_r, lam_t, lam_z):

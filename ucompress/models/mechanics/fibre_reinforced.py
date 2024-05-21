@@ -10,7 +10,7 @@ class FibreReinforced(Hyperelastic):
     of the stretches.
     """
 
-    def __init__(self, pars = {}):
+    def __init__(self):
         super().__init__()
 
         # Definition of constants in the model as SymPy symbols
@@ -25,7 +25,6 @@ class FibreReinforced(Hyperelastic):
 
         # Hyperelastic strain energy of the matrix
         W_m = G_m / 2 * (self.I_1 - 3 - 2 * sp.log(self.J)) + l_m / 2 * (self.J - 1)**2
-
 
         # In-plane invariants
         I_1_x = self.lam_r**2 + self.lam_t**2
@@ -42,14 +41,14 @@ class FibreReinforced(Hyperelastic):
         # Total strain energy
         self.W = (1 - self.alpha_f) * W_m + self.alpha_f * W_f
 
-        # Conversion dictionary (SymPy to SciPy)
-        conversion_dict = {'elliptic_k': ellipk, 'elliptic_e': ellipe}
+        # Update the conversion dictionary
+        self.conversion_dict = {
+            'elliptic_e': ellipe,
+            'elliptic_k': ellipk
+        }
 
-        # compute stresses, stress derivatives, and convert to NumPy expressions
-        self.compute_stress()
-        self.stress_derivatives()
-        self.lambdify(pars, conversion_dict = conversion_dict)
-
+        # Build the symbolic model
+        self.build()
     
     def eval_stress_derivatives(self, lam_r, lam_t, lam_z):
         """

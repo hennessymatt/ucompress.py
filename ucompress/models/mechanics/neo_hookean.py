@@ -7,7 +7,7 @@ class NeoHookean(Hyperelastic):
     with any other parameters that are needed
     """
 
-    def __init__(self, pars = {}):
+    def __init__(self):
         super().__init__()
 
         # Definition of constants in the model as SymPy symbols
@@ -21,13 +21,8 @@ class NeoHookean(Hyperelastic):
         # Hyperelastic strain energy
         self.W = G / 2 * (self.I_1 - 3 - 2 * sp.log(self.J)) + lam / 2 * (self.J - 1)**2
 
-        # Use SymPy to compute the stresses and their derivatives
-        self.compute_stress()
-        self.stress_derivatives()
-
-        # Convert the SymPy expressions into NumPy arrays
-        self.lambdify(pars)
-
+        # Build the symbolic model
+        self.build()
 
     def eval_stress_derivatives(self, lam_r, lam_t, lam_z):
         """

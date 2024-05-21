@@ -13,8 +13,8 @@ class Experiment():
         """
         Constructor
         """
-        self.mech = model["mechanics"]
-        self.perm = model["permeability"]
+        self.mech = model.mechanics
+        self.perm = model.permeability
         self.pars = pars
 
         self.preallocate()

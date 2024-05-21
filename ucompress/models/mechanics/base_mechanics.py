@@ -23,6 +23,13 @@ class Mechanics():
         self.J = self.lam_r * self.lam_t * self.lam_z
         self.I_1 = self.lam_r**2 + self.lam_t**2 + self.lam_z**2
 
+        """
+        Create an empty dictionary to store any functions that need to be
+        converted from SymPy into SciPy.  The user can add entries to this
+        entries when defining their model
+        """
+        self.conversion_dict = {}
+
 
     def stress_derivatives(self):
         """
@@ -41,14 +48,10 @@ class Mechanics():
         self.sig_z_t = sp.diff(self.sig_z, self.lam_t)
         self.sig_z_z = sp.diff(self.sig_z, self.lam_z)
           
-    def lambdify(self, pars, conversion_dict ={}):
+    def lambdify(self, pars):
         """
         Turns the SymPy expressions for the stresses and
         their derivatives into fast NumPy functions
-
-        conversion_dict is a dictionary that contains information
-        about how to convert any special SymPy functions (e.g elliptic
-        integrals) into SciPy functions
 
         We need to create a copy of the physical parameter dictionary
         without lam_z.  This avoids a bug where the stresses are
@@ -64,9 +67,10 @@ class Mechanics():
         # Define the arguments of the NumPy function
         args = [self.lam_r, self.lam_t, self.lam_z]
 
-        # Type of function to create
-        translation = [conversion_dict, 'numpy']
+        # Instructions on how to translate SymPy into Numpy
+        translation = [self.conversion_dict, 'numpy']
 
+        # Lambdify the code
         self.S_r = sp.lambdify(args, self.sig_r.subs(pars), translation)
         self.S_t = sp.lambdify(args, self.sig_t.subs(pars), translation)
         self.S_z = sp.lambdify(args, self.sig_z.subs(pars), translation)
@@ -121,6 +125,14 @@ class Hyperelastic(Mechanics):
     """
     def __init__(self):
         super().__init__()
+
+    def build(self):
+        """
+        Builds the symbolic model by calculating the stresses
+        and their derivatives
+        """
+        self.compute_stress()
+        self.stress_derivatives()
 
     def compute_stress(self):
         """
