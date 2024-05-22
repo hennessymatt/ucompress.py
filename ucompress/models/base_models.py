@@ -1,3 +1,5 @@
+from .osmosis.no_osmosis import NoOsmosis
+
 class Poroelastic():
     """
     A class for a poroelastic material without any osmotic
@@ -10,6 +12,7 @@ class Poroelastic():
 
         self.mechanics = mechanics
         self.permeability = permeability
+        self.osmosis = NoOsmosis()
 
         """
         Evaluates the symbolic model using the parameter values
