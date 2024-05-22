@@ -1,4 +1,3 @@
-from .models import permeability, mechanics
-from .models.base_models import Poroelastic
+from .models import permeability, mechanics, osmosis, base_models
 from . import parameters
 from . import experiments

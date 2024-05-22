@@ -152,3 +152,37 @@ class FibreRecruitment(Parameters):
             "Nt": 100,          # number of time steps
             "t_spacing": 'log'  # lin or log spacing between time steps
         }
+
+
+class NeoHookeanHydrogel(Parameters):
+    """
+    An example non-dimensional parameter set for a neo-Hookean
+    hydrogel
+    """
+    def __init__(self):
+
+        super().__init__()
+
+        """
+        Physical parameters.
+        """
+        self.physical = {
+            "R": 1,         # initial radius of sample
+            "chi": 0.3,     # Flory parameter
+            "G_T": 1e2,     # Thermal stiffness
+            "k_0": 1,       # initial permeability
+            "lam_z": 0.5,   # axial stretch
+            "F": -5,        # force on the platten
+            "E_m": 1,       # shear modulus of the matrix
+            "nu_m": 0,      # Poisson's ratio of the matrix
+            "t_end": 10    # end-time of simulation
+        }
+
+        """
+        computational parameters
+        """
+        self.computational = {
+            "N": 40,            # number of spatial grid points
+            "Nt": 100,          # number of time steps
+            "t_spacing": 'log'  # lin or log spacing between time steps
+        }
