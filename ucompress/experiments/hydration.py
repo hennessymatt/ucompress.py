@@ -38,22 +38,26 @@ class Hydration():
                 S_z - lam_r**2 * Pi
             ]
             
+        print('----------------------------------------')
+        print('Hydration step')
         # Solve the problem 
         sol = root(fun, [1.5, 1.5])
 
         if sol.success:
-            print('Hydration solver converged')
+            print('Solver converged')
 
             lam_r = sol.x[0]
             lam_z = sol.x[1]
 
             J = lam_r**2 * lam_z
+            phi_0 = 1 - 1 / J
 
             print(f'Volumetric expansion due to hydration: {J:.2f}')
+            print(f'Fluid fraction in hydrated state: {phi_0:.2f}')
             print(f'Radial stretch: {lam_r:.2f}')
             print(f'Axial stretch: {lam_z: .2f}')
             
-            return lam_r, lam_z
+            return lam_r, lam_z, phi_0
 
         else:
-            raise Exception('Hydration solver did not converge')
+            raise Exception('ERROR: Solver did not converge')
