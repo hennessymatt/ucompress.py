@@ -14,12 +14,12 @@ class NeoHookean(Hyperelastic):
         self.E_m = sp.Symbol('E_m')
         self.nu_m = sp.Symbol('nu_m')
 
-        # Converting E and nu into mu and lambda
+        # Converting E and nu into G and the lame parameter
         G = self.E_m / 2 / (1 + self.nu_m)
-        lam = 2 * G * self.nu_m / (1 - 2 * self.nu_m)
+        lame = 2 * G * self.nu_m / (1 - 2 * self.nu_m)
 
         # Hyperelastic strain energy
-        self.W = G / 2 * (self.I_1 - 3 - 2 * sp.log(self.J)) + lam / 2 * (self.J - 1)**2
+        self.W = G / 2 * (self.I_1 - 3 - 2 * sp.log(self.J_t)) + lame / 2 * (self.J_t - 1)**2
 
         # Build the symbolic model
         self.build()

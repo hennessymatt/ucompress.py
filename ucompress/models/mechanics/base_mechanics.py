@@ -16,12 +16,27 @@ class Mechanics():
         Constructor, defines the stretches, pressure,
         and some invariants
         """
+
+        # Pre-stretches due to hydration
+        self.beta_r, self.beta_z = sp.symbols('beta_r beta_z')
+
+        # Stretches from the hydrated state
         self.lam_r = sp.Symbol('lam_r')
         self.lam_t = sp.Symbol('lam_t')
         self.lam_z = sp.Symbol('lam_z')
 
+        # Total stretches
+        self.Lam_r = self.beta_r * self.lam_r
+        self.Lam_t = self.beta_r * self.lam_t
+        self.Lam_z = self.beta_z * self.lam_z
+
+        # Determinants
+        self.J_0 = self.beta_r**2 * self.beta_z
         self.J = self.lam_r * self.lam_t * self.lam_z
-        self.I_1 = self.lam_r**2 + self.lam_t**2 + self.lam_z**2
+        self.J_t = self.J * self.J_0
+
+        # Invariants
+        self.I_1 = self.Lam_r**2 + self.Lam_t**2 + self.Lam_z**2
 
         """
         Create an empty dictionary to store any functions that need to be
@@ -139,6 +154,6 @@ class Hyperelastic(Mechanics):
         Method for computing the stresses from the elastic strain energy
         function W (defined in subclasses of the hyperelastic class)
         """
-        self.sig_r = sp.diff(self.W, self.lam_r)
-        self.sig_t = sp.diff(self.W, self.lam_t)
-        self.sig_z = sp.diff(self.W, self.lam_z)
+        self.sig_r = 1 / self.J_0 * sp.diff(self.W, self.lam_r)
+        self.sig_t = 1 / self.J_0 * sp.diff(self.W, self.lam_t)
+        self.sig_z = 1 / self.J_0 * sp.diff(self.W, self.lam_z)

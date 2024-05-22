@@ -46,7 +46,7 @@ class OsmoticPressure():
         """
         return self.num_Pi(J)
     
-    def eval_osmotic_pressure_derivatives(self, J):
+    def eval_osmotic_pressure_derivative(self, J):
         """
         Method that numerically evaluates the derivatives of Pi and returns
         NumPy arrays
