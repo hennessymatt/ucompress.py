@@ -53,6 +53,7 @@ class Hydration():
             print(f'Radial stretch: {lam_r:.2f}')
             print(f'Axial stretch: {lam_z: .2f}')
             
+            return lam_r, lam_z
 
         else:
             raise Exception('Hydration solver did not converge')
