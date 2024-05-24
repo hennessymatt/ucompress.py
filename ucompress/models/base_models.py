@@ -29,7 +29,7 @@ class Poroelastic():
 
         self.mechanics.lambdify(parameters)
         self.permeability.lambdify(parameters)
-
+        self.osmosis.lambdify(parameters)
 
 class Hydrogel():
     """

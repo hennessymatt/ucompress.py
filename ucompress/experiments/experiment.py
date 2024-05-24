@@ -15,6 +15,7 @@ class Experiment():
         """
         self.mech = model.mechanics
         self.perm = model.permeability
+        self.osmosis = model.osmosis
         self.pars = pars
 
         self.preallocate()
@@ -99,8 +100,12 @@ class Experiment():
         Computes the pressure if the deformation is known
         """
         k = self.perm.eval_permeability(self.J)
-        rhs = self.r * self.lam_r**2 / 2 / k / self.J / self.dt * (self.lam_t**2 * self.lam_z - self.lam_t_old**2 * self.lam_z_old)
-        rhs[-1] = 0
+        Pi = self.osmosis.eval_osmotic_pressure(self.J)
+
+        rhs = self.r * self.lam_r**2 / 2 / k / self.J / self.dt * (
+            self.lam_t**2 * self.lam_z - self.lam_t_old**2 * self.lam_z_old
+            ) + self.D @ Pi
+        rhs[-1] = Pi[-1]
         self.p = np.linalg.solve(self.J_pp, rhs)
 
 
@@ -168,6 +173,10 @@ class Experiment():
             
             # builds the jacobian 
             self.build_jacobian()
+            # self.numerical_jacobian()
+            # self.check_jacobian(X)
+            # conv = False
+            # break
 
             # update solution
             X -= np.linalg.solve(self.JAC, self.FUN)
