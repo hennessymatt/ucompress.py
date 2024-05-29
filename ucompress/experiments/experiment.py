@@ -64,7 +64,7 @@ class Experiment():
         # derivatives of stretches wrt u
         self.lam_r_u = self.D
         self.lam_t_u = np.zeros((N, N))
-        self.lam_t_u[0,:] = D[0, :]
+        self.lam_t_u[0,:] = self.D[0, :]
         self.lam_t_u[1:,1:] = np.diag(1 / self.r[1:])
 
         # weights for the trapezoidal rule
@@ -181,6 +181,9 @@ class Experiment():
             # update solution
             X -= np.linalg.solve(self.JAC, self.FUN)
 
+            # increment counter
+            self.total_newton_iterations += 1
+
         # print(f'{n} newton iterations needed')
         return X, conv
     
@@ -228,6 +231,9 @@ class Experiment():
             print('ERROR: Unknown loading type')
 
         # begin time stepping
+        self.total_newton_iterations = 0
+        print('--------------------------------')
+        print('Transient step')
         for n in range(self.pars.computational["Nt"]):
             if self.solver_opts["monitor_convergence"]:
                 print(f'----solving iteration {n}----')
@@ -265,6 +271,10 @@ class Experiment():
             sol.J[:, n+1] = self.J
             sol.phi[:, n+1] = 1 - (1 - self.pars.physical["phi_0"]) / self.J
             sol.fluid_load_fraction[n+1] = self.fluid_load_fraction
+
+        print('Solver converged')
+        mean_newton_iterations = self.total_newton_iterations / self.pars.computational["Nt"]
+        print(f'Average number of Newton iterations per time step: {mean_newton_iterations:.1f}')
 
         return sol
 
