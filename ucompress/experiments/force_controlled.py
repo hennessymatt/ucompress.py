@@ -90,12 +90,12 @@ class ForceControlled(Experiment):
             self.lam_r = X[0]
             self.lam_t = X[0]
             self.lam_z = X[1]
-            self.p = 0
+            self.p = self.osmosis.eval_osmotic_pressure(self.lam_r**2 * self.lam_z)
             S_r, _, S_z = self.mech.eval_stress(self.lam_r, self.lam_r, self.lam_z)
             self.compute_force()
             
             return np.array([
-                S_r,
+                S_r - self.lam_r * self.lam_z * self.p,
                 self.pars.physical["F"] - self.F
             ])
         
@@ -138,8 +138,10 @@ class ForceControlled(Experiment):
         # compute the initial response
         self.initial_response()
 
+        Pi = self.osmosis.eval_osmotic_pressure(self.lam_r**2 * self.lam_z)
+
         # assume a boundary-layer-type solution for the pressure
-        self.p = self.p[0] * (1 - np.exp(-(1-self.r) / sol.t[1]**(1/2)))
+        self.p = (self.p[0] - Pi) * (1 - np.exp(-(1-self.r) / sol.t[1]**(1/2))) + Pi
 
         # set the initial guess of the solution
         X = np.r_[
@@ -156,9 +158,10 @@ class ForceControlled(Experiment):
         Builds the residual
         """ 
 
-        # Evaluate stresses and permeability
+        # Evaluate stresses, permeability, and osmotic pressure
         S_r, S_t, S_z = self.mech.eval_stress(self.lam_r, self.lam_t, self.lam_z)
         k = self.perm.eval_permeability(self.J)
+        Pi = self.osmosis.eval_osmotic_pressure(self.J)
 
         #----------------------------------------------------
         # displacement
@@ -173,17 +176,19 @@ class ForceControlled(Experiment):
             )
 
         # bulk eqn for u
-        self.F_u[1:-1] = self.r[1:-1] / 2 * self.dLdt[1:-1] - k[1:-1] / self.lam_r[1:-1] * self.div_S
+        self.F_u[1:-1] = self.r[1:-1] / 2 * self.dLdt[1:-1] - k[1:-1] / self.lam_r[1:-1] * (
+            self.div_S - self.lam_t[1:-1] * self.lam_z * (self.D[1:-1,:] @ Pi)
+        )
 
         # BCs for u
         self.F_u[0] = self.u[0]
-        self.F_u[-1] = S_r[-1]
+        self.F_u[-1] = S_r[-1] - self.lam_t[-1] * self.lam_z * Pi[-1]
 
         #----------------------------------------------------
         # pressure
         #----------------------------------------------------
-        self.F_p[:-1] = self.D[:-1,:] @ self.p - self.r[:-1] * self.lam_r[:-1]**2 / 2 / k[:-1] / self.J[:-1] * self.dLdt[:-1]
-        self.F_p[-1] = self.p[-1]
+        self.F_p[:-1] = self.D[:-1,:] @ (self.p - Pi) - self.r[:-1] * self.lam_r[:-1]**2 / 2 / k[:-1] / self.J[:-1] * self.dLdt[:-1]
+        self.F_p[-1] = self.p[-1] - Pi[-1]
 
         #----------------------------------------------------
         # axial stretch
@@ -212,6 +217,10 @@ class ForceControlled(Experiment):
         k = self.perm.eval_permeability(self.J)
         k_J = self.perm.eval_permeability_derivative(self.J)
 
+        # compute the osmotic pressure and its derivative
+        Pi = self.osmosis.eval_osmotic_pressure(self.J)
+        Pi_J = self.osmosis.eval_osmotic_pressure_derivative(self.J)
+
         #----------------------------------------------------
         # displacement
         #----------------------------------------------------
@@ -220,7 +229,7 @@ class ForceControlled(Experiment):
         self.J_uu[1:-1, :] = np.diag(self.lam_z * self.r / self.dt)[1:-1,:] @ np.diag(self.lam_t) @ self.lam_t_u
 
         # diff effective perm
-        self.J_uu[1:-1, :] -= np.diag(self.div_S) @ (
+        self.J_uu[1:-1, :] -= np.diag(self.div_S - self.lam_t[1:-1] * self.lam_z * (self.D[1:-1,:] @ Pi)) @ (
             np.diag(k_J / self.lam_r)[1:-1,:] @ self.J_u - 
             np.diag(k[1:-1] / self.lam_r[1:-1]**2) @ self.lam_r_u[1:-1,:]
         )
@@ -232,17 +241,34 @@ class ForceControlled(Experiment):
                 S_r_r[1:-1,:] @ self.lam_r_u + S_r_t[1:-1,:] @ self.lam_t_u - 
                 S_t_r[1:-1,:] @ self.lam_r_u - S_t_t[1:-1,:] @ self.lam_t_u)
             )
+        
+        # diff lam_t * lam_z * d(Pi)/dr terms
+        self.J_uu[1:-1, :] += np.diag(self.lam_z * k[1:-1] / self.lam_r[1:-1]) @ (
+            np.diag(self.D[1:-1,:] @ Pi) @ self.lam_t_u[1:-1,:] + 
+            np.diag(self.lam_t[1:-1]) @ self.D[1:-1,:] @ (np.diag(Pi_J) @ self.J_u)
+        )
 
         self.J_ul[1:-1,0] = (
             self.r[1:-1] / 2 / self.dt * self.lam_t[1:-1]**2 - 
-            k_J[1:-1] * self.J_l[1:-1] / self.lam_r[1:-1] * self.div_S - 
-            k[1:-1] / self.lam_r[1:-1] * (self.D[1:-1,:] @ S_r_z + (S_r_z - S_t_z)[1:-1] / self.r[1:-1])
+            k_J[1:-1] * self.J_l[1:-1] / self.lam_r[1:-1] * (self.div_S - self.lam_t[1:-1] * self.lam_z * Pi[1:-1]) - 
+            k[1:-1] / self.lam_r[1:-1] * (
+                self.D[1:-1,:] @ S_r_z + (S_r_z - S_t_z)[1:-1] / self.r[1:-1] - 
+                self.lam_t[1:-1] * (self.D[1:-1,:] @ Pi) - self.lam_t[1:-1] * self.lam_z * (self.D[1:-1,:] @ (Pi_J * self.J_l))
+                )
         )
 
         # boundary conditions for u
-        self.J_uu[-1, :] = S_r_r[-1,:] @ self.lam_r_u + S_r_t[-1,:] @ self.lam_t_u
-        self.J_ul[-1,0] = S_r_z[-1]
+        self.J_uu[-1, :] = (
+            S_r_r[-1,:] @ self.lam_r_u + S_r_t[-1,:] @ self.lam_t_u 
+            - self.lam_z * (Pi[-1] * self.lam_t_u[-1,:] + self.lam_t[-1] * Pi_J[-1] * self.J_u[-1,:])
+        )
 
+        self.J_ul[-1, 0] = (
+            S_r_z[-1] - 
+            self.lam_t[-1] * Pi[-1] - 
+            self.lam_t[-1] * self.lam_z * (self.J_l[-1] * Pi_J[-1])
+        )
+        
         #----------------------------------------------------
         # pressure
         #----------------------------------------------------
@@ -251,13 +277,17 @@ class ForceControlled(Experiment):
             np.diag(self.r * self.lam_r**2 * k_J * self.dLdt / 2 / k**2 / self.J)[:-1,:] @ self.J_u - 
             np.diag(self.r * self.lam_r**2 * self.dLdt / 2 / k / self.J**2)[:-1,:] @ self.J_u + 
             np.diag(self.r * self.lam_r**2 * self.lam_t * self.lam_z / k / self.J / self.dt)[:-1,:] @ self.lam_t_u
-        )
+        ) - self.D[:-1,:] @ np.diag(Pi_J) @ self.J_u
 
         self.J_pl[:-1, 0] = -(
             -self.r * self.lam_r**2 * k_J * self.J_l / 2 / k**2 / self.J * self.dLdt - 
             self.r * self.lam_r**2 * self.J_l / 2 / k / self.J**2 * self.dLdt + 
             self.r * self.lam_r**2 / 2 / k / self.J / self.dt * self.lam_t**2
-        )[:-1]
+        )[:-1] - self.D[:-1,:] @ (Pi_J * self.J_l)
+
+        # boundary condition for p
+        self.J_pu[-1,:] = -Pi_J[-1] * self.J_u[-1,:]
+        self.J_pl[-1,0] = -Pi_J[-1] * self.J_l[-1]
 
         #----------------------------------------------------
         # axial stretch
