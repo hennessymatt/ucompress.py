@@ -37,6 +37,7 @@ class Mechanics():
 
         # Invariants
         self.I_1 = self.Lam_r**2 + self.Lam_t**2 + self.Lam_z**2
+        self.I_1_x = self.Lam_r**2 + self.Lam_t**2
 
         """
         Create an empty dictionary to store any functions that need to be
@@ -121,7 +122,7 @@ class Mechanics():
 
         N = len(lam_r)
         O = np.ones(N)
-        
+
         return (
             np.diag(self.S_r_r(lam_r, lam_t, lam_z)),
             np.diag(self.S_r_t(lam_r, lam_t, lam_z) * O),
