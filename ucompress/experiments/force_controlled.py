@@ -203,7 +203,7 @@ class ForceControlled(Experiment):
         self.FUN[self.ind_l] = self.F_l
 
 
-    def build_jacobian(self):
+    def analytical_jacobian(self):
         """
         Updates the entries in the Jacobian for the stress balance
         """
@@ -292,9 +292,11 @@ class ForceControlled(Experiment):
         #----------------------------------------------------
         # axial stretch
         #----------------------------------------------------
-        self.J_lu = -2 * np.pi * np.dot(
+        self.J_lu = 2 * np.pi * np.dot(
             self.w, 
-            np.diag(self.lam_t * self.p * self.r) @ self.lam_r_u + 
+            np.diag(S_z_r * self.r) @ self.lam_r_u + 
+            np.diag(S_z_t * self.r) @ self.lam_t_u -
+            np.diag(self.lam_t * self.p * self.r) @ self.lam_r_u -
             np.diag(self.lam_r * self.p * self.r) @ self.lam_t_u
         )
         self.J_lp = -2 * np.pi * self.w * self.lam_r * self.lam_t * self.r

@@ -133,7 +133,7 @@ class DisplacementControlled(Experiment):
         self.FUN = self.F_u
 
 
-    def build_jacobian(self):
+    def analytical_jacobian(self):
         """
         Updates the entries in the Jacobian for the stress balance
         """

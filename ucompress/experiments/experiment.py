@@ -22,10 +22,18 @@ class Experiment():
 
         # set default solver options
         self.solver_opts = {
+            "jacobian": "analytical", # use analytical Jacobian for Newton iterations
             "monitor_convergence": False, # monitor convergence of newton iterations
             "newton_max_iterations": 10, # maximum number of newton iterations
             "newton_tol": 1e-6 # newton convergence tolerance
         }
+
+        if self.solver_opts["jacobian"] == "analytical":
+            self.build_jacobian = self.analytical_jacobian
+        elif self.solver_opts["jacobian"] == "numerical":
+            self.build_jacobian = self.numerical_jacobian
+        else:
+            raise Exception('Unknown Jacobian type!')
 
     def preallocate(self):
         """
@@ -173,7 +181,6 @@ class Experiment():
             
             # builds the jacobian 
             self.build_jacobian()
-            # self.numerical_jacobian()
             # self.check_jacobian(X)
             # conv = False
             # break
