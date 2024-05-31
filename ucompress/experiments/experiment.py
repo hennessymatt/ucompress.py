@@ -252,7 +252,7 @@ class Experiment():
             # check for convergence
             if not(conv):
                 print(f'Newton iterations did not converge at step {n} (t = {t[n+1]:.2e})')
-                sol.trim_solution(n)
+                sol.trim_solution(n+1)
                 return sol
 
             # compute pressure
