@@ -28,12 +28,6 @@ class Experiment():
             "newton_tol": 1e-6 # newton convergence tolerance
         }
 
-        if self.solver_opts["jacobian"] == "analytical":
-            self.build_jacobian = self.analytical_jacobian
-        elif self.solver_opts["jacobian"] == "numerical":
-            self.build_jacobian = self.numerical_jacobian
-        else:
-            raise Exception('Unknown Jacobian type!')
 
     def preallocate(self):
         """
@@ -195,7 +189,7 @@ class Experiment():
         return X, conv
     
 
-    def transient_response(self, opts = None):
+    def transient_response(self):
         """
         Time steps the problem using the implicit Euler
         method. 
@@ -217,10 +211,14 @@ class Experiment():
         # extract time vector
         t = sol.t
 
-        # overwrite default solver options if user provides
-        # their own
-        if opts != None:
-            self.solver_opts = opts
+        # Set up the Jacobian
+        if self.solver_opts["jacobian"] == "analytical":
+            self.build_jacobian = self.analytical_jacobian
+        elif self.solver_opts["jacobian"] == "numerical":
+            self.build_jacobian = self.numerical_jacobian
+        else:
+            raise Exception('Unknown Jacobian type!')
+
 
         # initial condition
         self.u_old = np.zeros(self.N)
