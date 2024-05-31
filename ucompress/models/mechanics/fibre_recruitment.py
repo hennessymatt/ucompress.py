@@ -22,16 +22,17 @@ class FibreRecruitment(Hyperelastic):
         self.Theta = 2 * sp.pi * self.k / self.N
 
         # Strain energy of the neo-Hookean matrix
-        G_m = self.E_m / 2 / (1 + self.nu_m)
-        l_m = 2 * G_m * self.nu_m / (1 - 2 * self.nu_m)
-        W_m = G_m / 2 * (self.I_1 - 3 - 2 * sp.log(self.J)) + l_m / 2 * (self.J - 1)**2
+        G = self.E_m / 2 / (1 + self.nu_m)
+        lame = 2 * G * self.nu_m / (1 - 2 * self.nu_m)
+        W_m = G / 2 * (self.I_1 - 3 - 2 * sp.log(self.J_t)) + lame / 2 * (self.J_t - 1)**2
 
         # Subtract off a small amount from lam_t to ensure lam_r > lam_t, 
         # which prevents singularities when lam_r \simeq lam_t
         lam_t = self.lam_t - 1e-4
+        Lam_t = self.beta_r * lam_t
 
         # Compute the stretch and its mean over all angles
-        lam = sp.sqrt(self.lam_r**2 * sp.cos(self.Theta)**2 + lam_t**2 * sp.sin(self.Theta)**2)
+        lam = sp.sqrt(self.Lam_r**2 * sp.cos(self.Theta)**2 + Lam_t**2 * sp.sin(self.Theta)**2)
         Lam = self.average(lam)
 
         # Compute the contribution to the energy from the fibres
@@ -102,27 +103,3 @@ class FibreRecruitment(Hyperelastic):
         return 4 / self.N * (sp.summation(f, (self.k, 0, int(self.N/4))) - 
                             1/2 * f.subs(self.k, 0) - 1/2 * f.subs(self.k, int(self.N/4))
         )
-    
-    def eval_stress_derivatives(self, lam_r, lam_t, lam_z):
-        """
-        Overloads the method for evaluating the stress derivatives
-        to zero out certain entries and ensure the outputs have
-        the correct shape.
-        """
-
-        N = len(lam_r)
-
-        return (
-            np.diag(self.S_r_r(lam_r, lam_t, lam_z)),
-            np.diag(self.S_r_t(lam_r, lam_t, lam_z)),
-            np.zeros(N),
-
-            np.diag(self.S_t_r(lam_r, lam_t, lam_z)),
-            np.diag(self.S_t_t(lam_r, lam_t, lam_z)),
-            np.zeros(N),
-
-            np.zeros(N),
-            np.zeros(N),
-            self.S_z_z(lam_r, lam_t, lam_z)
-        )
-
