@@ -23,28 +23,3 @@ class NeoHookean(Hyperelastic):
 
         # Build the symbolic model
         self.build()
-
-    def eval_stress_derivatives(self, lam_r, lam_t, lam_z):
-        """
-        Overloads the method for evaluating the stress derivatives
-        to zero out certain entries and ensure the outputs have
-        the correct shape.
-        """
-
-        N = len(lam_r)
-
-        return (
-            np.diag(self.S_r_r(lam_r, lam_t, lam_z)),
-            np.zeros((N, N)),
-            np.zeros(N),
-
-            np.zeros((N, N)),
-            np.diag(self.S_t_t(lam_r, lam_t, lam_z)),
-            np.zeros(N),
-
-            np.zeros(N),
-            np.zeros(N),
-            self.S_z_z(lam_r, lam_t, lam_z)
-        )
-
-

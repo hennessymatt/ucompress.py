@@ -115,22 +115,28 @@ class Mechanics():
     
     def eval_stress_derivatives(self, lam_r, lam_t, lam_z):
         """
-        Numerically evaluates the stress derivatives and
-        returns them
+        Numerically evaluates the derivatives of the stresses 
+        and returns them
         """
+
+        N = len(lam_r)
+        O = np.ones(N)
+        
         return (
             np.diag(self.S_r_r(lam_r, lam_t, lam_z)),
-            np.diag(self.S_r_t(lam_r, lam_t, lam_z)),
-            self.S_r_z(lam_r, lam_t, lam_z),
+            np.diag(self.S_r_t(lam_r, lam_t, lam_z) * O),
+            self.S_r_z(lam_r, lam_t, lam_z) * O,
 
-            np.diag(self.S_t_r(lam_r, lam_t, lam_z)),
+            np.diag(self.S_t_r(lam_r, lam_t, lam_z) * O),
             np.diag(self.S_t_t(lam_r, lam_t, lam_z)),
-            self.S_t_z(lam_r, lam_t, lam_z),
+            self.S_t_z(lam_r, lam_t, lam_z) * O,
 
-            self.S_z_r(lam_r, lam_t, lam_z),
-            self.S_z_t(lam_r, lam_t, lam_z),
+            self.S_z_r(lam_r, lam_t,  lam_z) * O,
+            self.S_z_t(lam_r, lam_t,  lam_z) * O,
             self.S_z_z(lam_r, lam_t, lam_z)
         )
+
+
 
 
 
