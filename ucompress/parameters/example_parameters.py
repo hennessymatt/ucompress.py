@@ -207,6 +207,7 @@ class FibreReinforcedHydrogel(Parameters):
             "G_T": 1e2,     # Thermal stiffness
             "k_0": 1,       # initial permeability
             "lam_z": 0.5,   # axial stretch
+            "lam_m": 2,     # maximum recruitment stretch
             "F": -5,        # force on the platten
             "E_m": 1,       # shear modulus of the matrix
             "nu_m": 0.3,      # Poisson's ratio of the matrix
