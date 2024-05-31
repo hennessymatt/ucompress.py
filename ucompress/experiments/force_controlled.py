@@ -250,7 +250,7 @@ class ForceControlled(Experiment):
 
         self.J_ul[1:-1,0] = (
             self.r[1:-1] / 2 / self.dt * self.lam_t[1:-1]**2 - 
-            k_J[1:-1] * self.J_l[1:-1] / self.lam_r[1:-1] * (self.div_S - self.lam_t[1:-1] * self.lam_z * Pi[1:-1]) - 
+            k_J[1:-1] * self.J_l[1:-1] / self.lam_r[1:-1] * (self.div_S - self.lam_t[1:-1] * self.lam_z * (self.D[1:-1,:] @ Pi)) - 
             k[1:-1] / self.lam_r[1:-1] * (
                 self.D[1:-1,:] @ S_r_z + (S_r_z - S_t_z)[1:-1] / self.r[1:-1] - 
                 self.lam_t[1:-1] * (self.D[1:-1,:] @ Pi) - self.lam_t[1:-1] * self.lam_z * (self.D[1:-1,:] @ (Pi_J * self.J_l))
