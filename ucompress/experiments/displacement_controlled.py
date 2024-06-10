@@ -1,7 +1,6 @@
 from .solution import Solution
 from .experiment import Experiment, np
 from scipy.optimize import root
-import matplotlib.pyplot as plt
 
 class DisplacementControlled(Experiment):
 
