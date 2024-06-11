@@ -18,7 +18,7 @@ class HolmesMow(Permeability):
         M = sp.Symbol('M')
 
         # Compute the solid fraction
-        phi_s = 1 - self.phi_f
+        phi_s = 1 - self.phi
 
         # Introduce a small number to avoid dividing by zero if the initial
         # porosity is zero (as for a dry hydrogel)
