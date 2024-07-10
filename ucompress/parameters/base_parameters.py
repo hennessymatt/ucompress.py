@@ -92,18 +92,18 @@ class Parameters():
         }
 
 
-    def update(self, par, val):
+    def update(self, par = None, val = None):
         """
         Updates the scaling factors and non-dim parameters if
         the value of a dimensional parameter changes
         """
 
-        if par in self.dimensional:
+        if par in self.dimensional or par == None:
             self.dimensional[par] = val
-        elif par in self.computational:
+        elif par in self.computational or par == None:
             self.computational[par] = val
         else:
-            print('ERROR: parameter not found in dictionaries')
+            raise Exception('ERROR: parameter not found in dictionaries')
 
         self.compute_scaling_factors()
         self.non_dimensionalise()
