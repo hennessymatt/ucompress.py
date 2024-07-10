@@ -41,7 +41,9 @@ class Hydration():
         print('----------------------------------------')
         print('Hydration step')
         # Solve the problem 
-        sol = root(fun, [1.5, 1.5])
+        lam_r = 1.1
+        lam_z = 1.1
+        sol = root(fun, [lam_r, lam_z])
 
         if sol.success:
             print('Solver converged')
