@@ -1,0 +1,63 @@
+from scipy.optimize import root_scalar
+from math import log
+
+class ChiCalculator():
+    """
+    A class for calculating the value of \chi given
+    a *single* value of the swelling ratio.
+    """
+
+    def __init__(self, model, pars):
+        """
+        Constructor, takes as arguments a model
+        and parameter object
+        """
+        self.model = model
+        self.pars = pars
+
+    def solve(self, J_0):
+        """
+        Method which solves the hydration problem and
+        computes \chi
+        """
+
+        # first we set up the hydration problem and 
+        # set the parameters for a dry gel
+        self.pars.update("beta_r", 1)
+        self.pars.update("beta_z", 1)
+        self.pars.update("phi_0", 0)
+        self.model.assign(self.pars)
+
+        # calculate the porosity (fluid fraction)
+        phi = 1 - 1 / J_0
+
+        # solve the hydration problem
+        sol_h = root_scalar(lambda x: self.hydration_fun(x, J_0), x0 = 2, x1 = 3, xtol = 1e-8)
+        if not(sol_h.converged):
+            raise Exception('Hydration solver not converged')
+        
+        # extract the stretches
+        lam_z = sol_h.root
+        lam_r = (J_0 / lam_z)**(1/2)
+
+        # compute the axial stress
+        _, _, S_z = self.model.mechanics.eval_stress(lam_r, lam_r, lam_z)
+
+        # compute the value of chi
+        chi = -1 / (1 - phi)**2 * (S_z / self.pars.physical["G_T"] / lam_r**2 + log(phi) + 1 - phi)
+        
+        print(f'chi = {chi:.4f}')
+
+
+    def hydration_fun(self, lam_z, J_0):
+        """
+        A helper method which defines the nonlinear system describing
+        the hydrated equilibrium state.  This state can be calculated
+        without knowledge of \chi provided that J_0 is known
+        """
+
+        lam_r = (J_0 / lam_z)**(1/2)
+        S_r, _, S_z = self.model.mechanics.eval_stress(lam_r, lam_r, lam_z)
+
+        F = S_r / lam_r / lam_z - S_z / lam_r**2
+        return F
