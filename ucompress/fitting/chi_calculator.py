@@ -17,8 +17,11 @@ class ChiCalculator():
 
     def solve(self, J_0):
         """
-        Method which solves the hydration problem and
-        computes \chi
+        Method for solving the hydration problem and
+        computing \chi.  This method requires as
+        input the swelling ratio J_0 and it returns
+        the values of chi, the radial and axial stretches
+        lam_r and lam_z, and the porosity phi
         """
 
         # first we set up the hydration problem and 
