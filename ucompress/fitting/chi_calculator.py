@@ -48,6 +48,8 @@ class ChiCalculator():
         
         print(f'chi = {chi:.4f}')
 
+        return chi, lam_r, lam_z, phi
+
 
     def hydration_fun(self, lam_z, J_0):
         """
