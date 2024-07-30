@@ -37,7 +37,7 @@ class ChiCalculator():
         # solve the hydration problem
         sol_h = root_scalar(lambda x: self.hydration_fun(x, J_0), x0 = 2, x1 = 3, xtol = 1e-8)
         if not(sol_h.converged):
-            raise Exception('Hydration solver not converged')
+            raise Exception('Chi calculator did not converge')
         
         # extract the stretches
         lam_z = sol_h.root
