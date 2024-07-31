@@ -35,7 +35,12 @@ class ChiCalculator():
         phi = 1 - 1 / J_0
 
         # solve the hydration problem
-        sol_h = root_scalar(lambda x: self.hydration_fun(x, J_0), x0 = 2, x1 = 3, xtol = 1e-8)
+        sol_h = root_scalar(lambda x: self.hydration_fun(x, J_0), 
+                            x0 = 0.2 * J_0, 
+                            x1 = 0.9 * J_0, 
+                            xtol = 1e-8,
+                            bracket=(1.0, 1.1 * J_0)
+                            )
         if not(sol_h.converged):
             raise Exception('Chi calculator did not converge')
         
