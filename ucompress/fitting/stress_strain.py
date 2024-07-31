@@ -1,5 +1,6 @@
 from scipy.optimize import minimize
 import numpy as np
+from .chi_calculator import ChiCalculator
 
 class StressStrain():
     """
@@ -26,14 +27,16 @@ class StressStrain():
         """
         return 1 - strain_data
 
-    def solve(self, fitting_params):
+    def solve(self, fitting_params, fixed_hydration = False):
         """
         Carries out the minimisation using SciPy's solvers
 
         Inputs: 
         
-        fitting_params = a tuple of strings corresponding to
-        the fitting parameters
+        fitting_params = a dictionary where the keys are strings
+        that describe the parameters to fit and the values are
+        floats that are used to normalise the parameters so they
+        all contribute to the optimisation equally
 
         Outputs:
 
@@ -46,15 +49,27 @@ class StressStrain():
         X = np.zeros(N_pars)
 
         for n, param in enumerate(fitting_params):
-            X[n] = self.pars.physical[param]
+            # create the initial guess by normalising the parameters
+            normalisation_factor = fitting_params[param]
+            X[n] = self.pars.dimensional[param] / normalisation_factor
 
         # Solve the minimisation problem with SciPy
-        result = minimize(lambda X: self.calculate_cost(X, fitting_params), X, tol=1e-2)
+        result = minimize(
+            lambda X: self.calculate_cost(X, fitting_params, fixed_hydration), 
+            X, 
+            method = 'BFGS',
+            options = {"xrtol": 1e-3})
 
         print(result)
 
         # extract fitted values
-        fitted_vals = result.x
+        normalised_fitted_vals = result.x
+
+        # un-normalised the fitted values
+        fitted_vals = normalised_fitted_vals.copy()
+        for n, param in enumerate(fitting_params):
+            normalisation_factor = fitting_params[param]
+            fitted_vals[n] = normalised_fitted_vals[n] * normalisation_factor            
 
         # print some info to the screen
         for val, param in zip(fitted_vals, fitting_params):
@@ -64,7 +79,7 @@ class StressStrain():
         return fitted_vals
 
 
-    def calculate_cost(self, X, fitting_params):
+    def calculate_cost(self, X, fitting_params, fixed_hydration):
         """
         Computes the objective function.  The compression of the
         material is assumed to be fast so that there is no loss
@@ -74,8 +89,10 @@ class StressStrain():
 
         X = array of values of the current fitting parameters
         
-        fitting_params = a tuple of strings corresponding to
-        the fitting parameters
+        fitting_params = a dictionary where the keys are strings
+        that describe the parameters to fit and the values are
+        floats that are used to normalise the parameters so they
+        all contribute to the optimisation equally
 
         Outputs:
 
@@ -83,11 +100,22 @@ class StressStrain():
 
         """
 
+
         # Update the model with the new parameter values
         for value, param in zip(X, fitting_params):
-            self.pars.update(param, value)
-        
+            normalisation_factor = fitting_params[param]
+            self.pars.update(param, value * normalisation_factor)
         self.model.assign(self.pars)
+
+        # update hydration if required
+        if fixed_hydration:
+            chi_calc = ChiCalculator(self.model, self.pars)
+            chi, beta_r, beta_z, phi_0 = chi_calc.solve(J_0 = self.pars.physical["J_h"])
+            self.pars.update("chi", chi)
+            self.pars.update("beta_r", beta_r)
+            self.pars.update("beta_z", beta_z)
+            self.pars.update("phi_0", phi_0)
+            self.model.assign(self.pars)
 
         # load the data points to evaluate the stretch at
         lam_z = self.stretch_data
