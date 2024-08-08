@@ -7,27 +7,32 @@ class StressStrain():
     Class for fitting model parameters to stress-strain data
     """
 
-    def __init__(self, strain_data, stress_data, model, pars):
+    def __init__(self, data):
         """
-        Constructor: stress and strain data must be positive.
-        The stress data must have units of Pa
+        Constructor.  The data should be a dict of dicts,
+        where the primary keys are labels for the data/model
+        and the primary values is a dictionary that contains
+        the data and the model.  The data should consist of the:
+
+        - axial strain (positive, with units of mm/mm)
+        - axial stress (positive, with units of Pa)
+        - the model to use for that particular data
         """
 
-        self.stretch_data = self.strain_to_stretch(strain_data)
-        self.stress_data = stress_data
-        self.N_data = len(strain_data)
+        self.data = data
+        self.strain_to_stretch()
 
-        self.model = model
-        self.pars = pars
-
-    def strain_to_stretch(self, strain_data):
+    def strain_to_stretch(self):
         """
         Converts strain data (mm/mm) into stretch (lambda_z)
         data
         """
-        return 1 - strain_data
 
-    def solve(self, fitting_params, fixed_hydration = False):
+        for label in self.data:
+            strain_data = self.data[label]["strain_data"]
+            self.data[label]["stretch_data"] = 1 - strain_data
+
+    def solve(self, fitting_params, X_0, fixed_hydration = False):
         """
         Carries out the minimisation using SciPy's solvers
 
@@ -38,25 +43,21 @@ class StressStrain():
         floats that are used to normalise the parameters so they
         all contribute to the optimisation equally
 
+        X_0 = A NumPy array with the initial guesses of the solution
+
+        fixed_hydration = a flag that determines whether the initial
+        hydration of the material should be kept constant during the
+        fit
+
         Outputs:
 
         fitted_vals = a NumPy array with values of the fitted 
         """
 
-        # Build the initial guess using the parameter values
-        # already in the file
-        N_pars = len(fitting_params)
-        X = np.zeros(N_pars)
-
-        for n, param in enumerate(fitting_params):
-            # create the initial guess by normalising the parameters
-            normalisation_factor = fitting_params[param]
-            X[n] = self.pars.dimensional[param] / normalisation_factor
-
         # Solve the minimisation problem with SciPy
         result = minimize(
             lambda X: self.calculate_cost(X, fitting_params, fixed_hydration), 
-            X, 
+            X_0, 
             method = 'BFGS',
             options = {"xrtol": 1e-3})
 
@@ -94,44 +95,54 @@ class StressStrain():
         floats that are used to normalise the parameters so they
         all contribute to the optimisation equally
 
+        fixed_hydration = a flag that determines whether the initial
+        hydration of the material should be kept constant during the
+        fit
+
+
         Outputs:
 
         cost = a float with the value of the cost/objective function
 
         """
 
+        # initiate the cost
+        cost = 0
 
         # Update the model with the new parameter values
-        for value, param in zip(X, fitting_params):
-            normalisation_factor = fitting_params[param]
-            self.pars.update(param, value * normalisation_factor)
-        self.model.assign(self.pars)
+        for key in self.data:
+            pars = self.data[key]["pars"]
+            model = self.data[key]["model"]
+            for value, param in zip(X, fitting_params):
+                normalisation_factor = fitting_params[param]
+                pars.update(param, value * normalisation_factor)
+            model.assign(pars)
+    
+            # update hydration if required
+            if fixed_hydration:
+                chi_calc = ChiCalculator(model, pars)
+                chi, beta_r, beta_z, phi_0 = chi_calc.solve(J_0 = pars.physical["J_h"])
+                pars.update("chi", chi)
+                pars.update("beta_r", beta_r)
+                pars.update("beta_z", beta_z)
+                pars.update("phi_0", phi_0)
+                model.assign(pars)
 
-        # update hydration if required
-        if fixed_hydration:
-            chi_calc = ChiCalculator(self.model, self.pars)
-            chi, beta_r, beta_z, phi_0 = chi_calc.solve(J_0 = self.pars.physical["J_h"])
-            self.pars.update("chi", chi)
-            self.pars.update("beta_r", beta_r)
-            self.pars.update("beta_z", beta_z)
-            self.pars.update("phi_0", phi_0)
-            self.model.assign(self.pars)
+            # load the data points to evaluate the stretch at
+            lam_z = self.data[key]["stretch_data"]
+            
+            # compute radial stretch
+            lam_r = 1 / np.sqrt(lam_z)
 
-        # load the data points to evaluate the stretch at
-        lam_z = self.stretch_data
-        
-        # compute radial stretch
-        lam_r = 1 / np.sqrt(lam_z)
+            # compute stresses and pressure
+            S_r, _, S_z = model.mechanics.eval_stress(lam_r, lam_r, lam_z)
+            p = lam_r * S_r
 
-        # compute stresses and pressure
-        S_r, _, S_z = self.model.mechanics.eval_stress(lam_r, lam_r, lam_z)
-        p = lam_r * S_r
+            # Calculate the total PK1 stress
+            S_z_T = S_z - lam_r**2 * p
 
-        # Calculate the total PK1 stress
-        S_z_T = S_z - lam_r**2 * p
-
-        # Compute the cost as the RMSE
-        cost = np.sqrt(np.mean((-self.pars.scaling["stress"] * S_z_T - self.stress_data)**2))
+            # Compute the cost as the RMSE
+            cost += np.sqrt(np.mean((-pars.scaling["stress"] * S_z_T - self.data[key]["stress_data"])**2))
 
         print(X, cost)
 
