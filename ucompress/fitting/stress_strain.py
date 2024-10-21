@@ -43,7 +43,8 @@ class StressStrain():
         floats that are used to normalise the parameters so they
         all contribute to the optimisation equally
 
-        X_0 = A NumPy array with the initial guesses of the solution
+        X_0 = A NumPy array with the initial guesses of the (normalised) 
+        solution
 
         fixed_hydration = a flag that determines whether the initial
         hydration of the material should be kept constant during the
