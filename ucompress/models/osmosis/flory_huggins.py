@@ -14,8 +14,9 @@ class FloryHuggins(OsmoticPressure):
 
         chi = sp.Symbol('chi')  # Flory interaction parameter
         G_T = sp.Symbol('G_T')  # Thermal stiffness = R_g * T / V_w 
+        alpha_f = sp.Symbol('alpha_f') # Nominal fibre fraction
 
-        self.Pi = -G_T * (
+        self.Pi = -(1 - alpha_f) * G_T * (
             sp.log(self.phi) + chi * (1 - self.phi)**2 + (1 - self.phi)
         )
             
