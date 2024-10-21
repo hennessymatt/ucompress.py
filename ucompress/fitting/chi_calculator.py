@@ -52,7 +52,7 @@ class ChiCalculator():
         _, _, S_z = self.model.mechanics.eval_stress(lam_r, lam_r, lam_z)
 
         # compute the value of chi
-        chi = -1 / (1 - phi)**2 * (S_z / self.pars.physical["G_T"] / lam_r**2 + log(phi) + 1 - phi)
+        chi = -1 / (1 - phi)**2 * (S_z / self.pars.physical["G_T"] / (1 - self.pars.physical["alpha_f"]) / lam_r**2 + log(phi) + 1 - phi)
         
         print(f'chi = {chi:.4f}')
 
