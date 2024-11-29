@@ -64,9 +64,9 @@ class Solution():
         # compute the time vector using logarithmic (log) or linear (lin)
         # spacing
         if pars.computational["t_spacing"] == 'log':
-            self.t = np.r_[0, np.logspace(np.log10(3e-5), np.log10(pars.physical["t_end"]), pars.computational["Nt"])]
+            self.t = np.r_[0, np.logspace(np.log10(pars.physical["t_start"]), np.log10(pars.physical["t_end"]), pars.computational["Nt"])]
         elif pars.computational["t_scaling"] == 'lin':
-            self.t = np.linspace(0, pars.physical["t_end"], pars.computational["Nt"] + 1)
+            self.t = np.linspace(pars.physical["t_start"], pars.physical["t_end"], pars.computational["Nt"] + 1)
         
         # compute the sizes of the time steps
         self.dt = np.diff(self.t)
