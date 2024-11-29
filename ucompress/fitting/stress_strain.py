@@ -55,6 +55,10 @@ class StressStrain():
         fitted_vals = a NumPy array with values of the fitted 
         """
 
+        print('----------------------')
+        print(f'Stress-strain fit')
+
+
         # Solve the minimisation problem with SciPy
         result = minimize(
             lambda X: self.calculate_cost(X, fitting_params, fixed_hydration), 
@@ -62,7 +66,8 @@ class StressStrain():
             method = 'BFGS',
             options = {"xrtol": 1e-3})
 
-        print(result)
+        if not(result.success):
+            print('WARNING: SciPy minimise did not converge!')
 
         # extract fitted values
         normalised_fitted_vals = result.x
@@ -74,8 +79,9 @@ class StressStrain():
             fitted_vals[n] = normalised_fitted_vals[n] * normalisation_factor            
 
         # print some info to the screen
+        print('Optimal parameters:')
         for val, param in zip(fitted_vals, fitting_params):
-            print(f'{param} = {val:.2e}')
+            print(f'{param} = {val:.4e}')
 
 
         return fitted_vals
@@ -145,6 +151,6 @@ class StressStrain():
             # Compute the cost as the RMSE
             cost += np.sqrt(np.mean((-pars.scaling["stress"] * S_z_T - self.data[key]["stress_data"])**2))
 
-        print(X, cost)
+        # print(X, cost)
 
         return cost
