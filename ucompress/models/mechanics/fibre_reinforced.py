@@ -10,7 +10,7 @@ class FibreReinforced(Hyperelastic):
     of the stretches.
     """
 
-    def __init__(self):
+    def __init__(self, homogeneous = False):
         super().__init__()
 
         # Definition of constants in the model as SymPy symbols
@@ -32,9 +32,12 @@ class FibreReinforced(Hyperelastic):
         Lam_t = self.beta_r * lam_t
 
         # Strain energy of the fibres
-        W_f = self.E_f / 4 * (
-            self.I_1_x - 8 * self.Lam_r / sp.pi * sp.elliptic_e(1 - Lam_t**2 / self.Lam_r**2) + 2
-            )
+        if not(homogeneous):
+            W_f = self.E_f / 4 * (
+                self.I_1_x - 8 * self.Lam_r / sp.pi * sp.elliptic_e(1 - Lam_t**2 / self.Lam_r**2) + 2
+                )
+        else:
+            W_f = self.E_f / 2 * (self.Lam_r - 1)**2
 
         # Total strain energy
         self.W = (1 - self.alpha_f) * W_m + self.alpha_f * W_f

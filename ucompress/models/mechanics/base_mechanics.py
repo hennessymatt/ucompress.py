@@ -156,11 +156,17 @@ class Hyperelastic(Mechanics):
         self.compute_stress()
         self.stress_derivatives()
 
-    def compute_stress(self):
+    def compute_stress(self, homogeneous = False):
         """
         Method for computing the stresses from the elastic strain energy
         function W (defined in subclasses of the hyperelastic class)
         """
-        self.sig_r = 1 / self.J_0 * sp.diff(self.W, self.lam_r)
-        self.sig_t = 1 / self.J_0 * sp.diff(self.W, self.lam_t)
-        self.sig_z = 1 / self.J_0 * sp.diff(self.W, self.lam_z)
+
+        if not(homogeneous):
+            self.sig_r = 1 / self.J_0 * sp.diff(self.W, self.lam_r)
+            self.sig_t = 1 / self.J_0 * sp.diff(self.W, self.lam_t)
+            self.sig_z = 1 / self.J_0 * sp.diff(self.W, self.lam_z)
+        else:
+            self.sig_r = 1 / self.J_0 * sp.diff(self.W, self.lam_r)
+            self.sig_t = self.sig_r
+            self.sig_z = 1 / self.J_0 * sp.diff(self.W, self.lam_z)

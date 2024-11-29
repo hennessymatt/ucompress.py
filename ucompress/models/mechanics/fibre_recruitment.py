@@ -7,7 +7,7 @@ class FibreRecruitment(Hyperelastic):
     orientation is carried out numerically using quadrature.
     """
 
-    def __init__(self, pars = {}, distribution = 'linear'):
+    def __init__(self, pars = {}, distribution = 'linear', homogeneous = False):
         super().__init__()
 
         # Definition of constants in the model as SymPy symbols
@@ -32,8 +32,12 @@ class FibreRecruitment(Hyperelastic):
         Lam_t = self.beta_r * lam_t
 
         # Compute the stretch and its mean over all angles
-        lam = sp.sqrt(self.Lam_r**2 * sp.cos(self.Theta)**2 + Lam_t**2 * sp.sin(self.Theta)**2)
-        Lam = self.average(lam)
+        if not(homogeneous):
+            lam = sp.sqrt(self.Lam_r**2 * sp.cos(self.Theta)**2 + Lam_t**2 * sp.sin(self.Theta)**2)
+            Lam = self.average(lam)
+        else:
+            lam = self.Lam_r
+            Lam = lam
 
         # Compute the contribution to the energy from the fibres
         if distribution == 'triangle':
@@ -78,8 +82,12 @@ class FibreRecruitment(Hyperelastic):
             tmp = 3 * lam_m**2 + 4 * lam_m + 3
             f = self.E_f / 2 * ((lam-1)**4 * (5 * lam_m - 2 * lam - 3) / (lam_m-1)**3 / tmp)
             g = self.E_f / 2 * (10 * lam * (lam - lam_m - 1) / tmp + 1)
-            F = self.average(f)
-            G = self.average(g)
+            
+            if not(homogeneous):
+                F = self.average(f)
+                G = self.average(g)
+            else:
+                F = f; G = g
 
             # Final averaged strain energy of the fibres
             W_f = sp.Piecewise((0, Lam < 1), (F, sp.And(1 < Lam, Lam < lam_m)), (G, Lam > lam_m))
