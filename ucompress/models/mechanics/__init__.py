@@ -3,3 +3,4 @@ from .fibre_reinforced import FibreReinforced
 from .fibre_reinforced_invariants import FibreReinforcedInvariants
 from .fibre_reinforced_quad import FibreReinforcedQuad
 from .fibre_recruitment import FibreRecruitment
+from .fibre_network import FibreNetwork
