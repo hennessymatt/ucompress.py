@@ -73,7 +73,7 @@ class Parameters():
     def non_dimensionalise(self):
         """
         Carries out the non-dimensionalisation of all of the physical
-        parameters as well as the final simulation time.  In its 
+        parameters as well as the start/end simulation time.  In its 
         current form, this method only applies to simple neo-Hookean
         materials.  This method will therefore have to be overloaded
         if using a more complex model with extra parameters.
@@ -88,6 +88,7 @@ class Parameters():
             "phi_0": self.dimensional["phi_0"],
             "lam_z": self.dimensional["lam_z"],
             "F": self.dimensional["F"] / self.scaling["force"],
+            "t_start": self.dimensional["t_start"] / self.scaling["time"],
             "t_end": self.dimensional["t_end"] / self.scaling["time"]
         }
 
@@ -98,12 +99,13 @@ class Parameters():
         the value of a dimensional parameter changes
         """
 
-        if par in self.dimensional or par == None:
-            self.dimensional[par] = val
-        elif par in self.computational or par == None:
-            self.computational[par] = val
-        else:
-            raise Exception('ERROR: parameter not found in dictionaries')
+        if par != None and val != None:
+            if par in self.dimensional:
+                self.dimensional[par] = val
+            elif par in self.computational:
+                self.computational[par] = val
+            else:
+                raise Exception('ERROR: parameter not found in dictionaries')
 
         self.compute_scaling_factors()
         self.non_dimensionalise()
