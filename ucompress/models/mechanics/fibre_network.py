@@ -2,9 +2,7 @@ from .base_mechanics import Hyperelastic, np, sp
 
 class FibreNetwork(Hyperelastic):
     """
-    A class for fibre-reinforced neo-Hookean materials.  The model
-    accounts for fibre recruitment.  The averaging of the fibre
-    orientation is carried out numerically using quadrature.
+    A class for a pure fibre network
     """
 
     def __init__(self, pars = {}, distribution = 'linear', homogeneous = False):
@@ -13,7 +11,7 @@ class FibreNetwork(Hyperelastic):
         # Definition of constants in the model as SymPy symbols
         self.E_m = sp.Symbol('E_m')
         self.nu_m = sp.Symbol('nu_m')
-        self.alpha_f = sp.Symbol('alpha_f')
+        self.Phi_f = sp.Symbol('Phi_f')
         self.E_f = sp.Symbol('E_f')
 
         # Integration parameters
@@ -97,7 +95,7 @@ class FibreNetwork(Hyperelastic):
 
 
         # Total strain energy
-        self.W = (1 - self.alpha_f) * W_m + self.alpha_f * W_f
+        self.W = (1 - self.Phi_f) * W_m + self.Phi_f * W_f
 
         # Build the model
         self.build()

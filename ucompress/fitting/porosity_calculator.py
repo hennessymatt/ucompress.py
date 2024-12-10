@@ -24,7 +24,7 @@ class PorosityCalculator():
         # load fibre properties and calculate mean solid density
         if have_fibres:
             rho_f = params.dimensional["rho_f"]
-            Phi_f = params.dimensional["alpha_f"]
+            Phi_f = params.dimensional["Phi_f"]
 
             rho_s = Phi_f * rho_f + (1 - Phi_f) * rho_m
 

@@ -13,7 +13,7 @@ class FibreRecruitment(Hyperelastic):
         # Definition of constants in the model as SymPy symbols
         self.E_m = sp.Symbol('E_m')
         self.nu_m = sp.Symbol('nu_m')
-        self.alpha_f = sp.Symbol('alpha_f')
+        self.Phi_f = sp.Symbol('Phi_f')
         self.E_f = sp.Symbol('E_f')
 
         # Integration parameters
@@ -97,7 +97,7 @@ class FibreRecruitment(Hyperelastic):
 
 
         # Total strain energy
-        self.W = (1 - self.alpha_f) * W_m + self.alpha_f * W_f
+        self.W = (1 - self.Phi_f) * W_m + self.Phi_f * W_f
 
         # Build the model
         self.build()

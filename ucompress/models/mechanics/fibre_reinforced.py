@@ -16,7 +16,7 @@ class FibreReinforced(Hyperelastic):
         # Definition of constants in the model as SymPy symbols
         self.E_m = sp.Symbol('E_m')
         self.nu_m = sp.Symbol('nu_m')
-        self.alpha_f = sp.Symbol('alpha_f')
+        self.Phi_f = sp.Symbol('Phi_f')
         self.E_f = sp.Symbol('E_f')
 
         # Converting E and nu into G and the lame parameter
@@ -40,7 +40,7 @@ class FibreReinforced(Hyperelastic):
             W_f = self.E_f / 2 * (self.Lam_r - 1)**2
 
         # Total strain energy
-        self.W = (1 - self.alpha_f) * W_m + self.alpha_f * W_f
+        self.W = (1 - self.Phi_f) * W_m + self.Phi_f * W_f
 
         # Update the SymPy -> SciPy conversion dictionary
         self.conversion_dict = {
