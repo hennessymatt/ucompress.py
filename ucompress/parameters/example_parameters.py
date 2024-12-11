@@ -103,7 +103,7 @@ class FibreReinforced(Parameters):
             "E_m": 1,       # shear modulus of the matrix
             "nu_m": 0,      # Poisson's ratio of the matrix
             "E_f": 100,     # shear modulus of the fibres
-            "alpha_f": 0.5, # volume fraction of fibres
+            "Phi_f": 0.5,   # nominal volume fraction of fibres
             "t_end": 10,    # end-time of simulation
         }
 
@@ -140,7 +140,7 @@ class FibreRecruitment(Parameters):
             "nu_m": 0,      # Poisson's ratio of the matrix
             "E_f": 100,     # Young's modulus of the fibres
             "lam_m": 1.2,   # Max recruitment stretch
-            "alpha_f": 0.5, # volume fraction of fibres
+            "Phi_f": 0.5,   # nominal volume fraction of fibres
             "t_end": 10,    # end-time of simulation
         }
 
@@ -210,9 +210,9 @@ class FibreReinforcedHydrogel(Parameters):
             "lam_m": 2,     # maximum recruitment stretch
             "F": -5,        # force on the platten
             "E_m": 1,       # shear modulus of the matrix
-            "nu_m": 0.3,      # Poisson's ratio of the matrix
+            "nu_m": 0.3,    # Poisson's ratio of the matrix
             "E_f": 100,     # shear modulus of the fibres
-            "alpha_f": 0.5, # volume fraction of fibres
+            "Phi_f": 0.5,   # nominal volume fraction of fibres
             "t_end": 10,    # end-time of simulation
         }
 
