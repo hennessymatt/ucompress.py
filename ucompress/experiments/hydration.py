@@ -14,10 +14,26 @@ class Hydration():
         self.pars = parameters
 
 
-    def steady_response(self):
+    def steady_response(self, lam_r = None, lam_z = None):
         """
-        Computes the steady-state response to hydration
+        Computes the steady-state response to hydration.  The user
+        can provide initial guesses for the radial and axial
+        stretches if they want.  If not, they default to
+        prescribed values. 
+
+        Returns:
+        lam_r - the radial stretch
+        lam_z - the axial stretch
+        phi_0 - the porosity
         """
+
+        # Set the initial guess if not passed by the user
+        if lam_r == None:
+            lam_r = 1.1
+        
+        if lam_z == None:
+            lam_z = 1.1
+
 
         def fun(X):
             """
@@ -40,10 +56,9 @@ class Hydration():
             
         print('----------------------------------------')
         print('Hydration step')
+
         # Solve the problem 
-        lam_r = 1.1
-        lam_z = 1.1
-        sol = root(fun, [lam_r, lam_z])
+        sol = root(fun, [lam_r, lam_z], tol = 1e-8)
 
         if sol.success:
             print('Solver converged')
