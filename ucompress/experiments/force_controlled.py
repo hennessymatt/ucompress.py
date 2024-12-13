@@ -34,10 +34,19 @@ class ForceControlled(Experiment):
         self.J_lp = np.zeros((1, N))
 
 
-    def initial_response(self):
+    def initial_response(self, lam_z_0 = None):
         """
-        Computes the initial response of the sample
+        Computes the initial response of the sample.
+
+        Allows the user to provide an initial guess of the
+        solution.  If none is provided, then the initial
+        value of lam_z defined in the parameter object
+        is used.
         """
+
+        if lam_z_0 == None:
+            lam_z_0 = self.pars.physical["lam_z"]
+        
 
         # helper function for solving the nonlinea problem for
         # the initial response
@@ -55,15 +64,16 @@ class ForceControlled(Experiment):
         # solve the nonlinear scalar equation for the axial stretch
         sol = root_scalar(fun, 
                           method = 'secant', 
-                          x0 = self.pars.physical["lam_z"], 
-                          x1 = self.pars.physical["lam_z"] * 1.01
+                          x0 = lam_z_0, 
+                          x1 = lam_z_0 * 1.01
                           )
         
         # check if the solver converged
         if sol.converged == True:
             fun(sol.root)
         else:
-            print('ERROR: solver for initial response did not converge')
+            print(sol)
+            raise Exception('ERROR: solver for initial response did not converge')
             return
         
         # compute fluid load fraction
@@ -79,10 +89,19 @@ class ForceControlled(Experiment):
 
         return sol
 
-    def steady_response(self):
+    def steady_response(self, lam_r_0 = None, lam_z_0 = None):
         """
-        Computes the steady-state response
+        Computes the steady response of the sample.
+
+        Allows the user to provide an initial guess of the
+        solution (radial and axial stretch).  If none are
+        provided, then default values are used
         """
+
+        if lam_r_0 == None:
+            lam_r_0 = 1.1
+        if lam_z_0 == None:
+            lam_z_0 = self.pars.physical["lam_z"]
 
         # helper function for solving the nonlinear problem for
         # the steady response
@@ -100,14 +119,14 @@ class ForceControlled(Experiment):
             ])
         
         # solve the nonlinear scalar equation for the axial stretch
-        steady_sol = root(fun, x0 = np.array([1.1, self.pars.physical["lam_z"]]))
+        steady_sol = root(fun, x0 = np.array([lam_r_0, lam_z_0]))
     
         # check if the solver converged
         if steady_sol.success == True:
             fun(steady_sol.x)
         else:
-            print('ERROR: solver for initial response did not converge')
-            return
+            print(steady_sol)
+            raise Exception('ERROR: solver for steady response did not converge')
         
         # compute fluid load fraction
         self.compute_fluid_load_fraction()
