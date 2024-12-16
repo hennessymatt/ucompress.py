@@ -126,12 +126,17 @@ class Experiment():
     def compute_fluid_load_fraction(self):
         """
         Computes the fluid load fraction, mathematically defined
-        as the area integral of p * J / lam_z divided by the
+        as the area integral of mu * J / lam_z divided by the
         force F
         """
 
+        # Calculate the chem potential
+        Pi = self.osmosis.eval_osmotic_pressure(self.lam_r**2 * self.lam_z)
+        mu = self.p - Pi
+
+        # Calculate the FLF
         self.fluid_load_fraction = -2 * np.pi * np.sum(
-            self.w * (self.p * self.lam_r * self.lam_t) * self.r
+            self.w * (mu * self.lam_r * self.lam_t) * self.r
             ) / self.F
 
     def newton_iterations(self, X):
