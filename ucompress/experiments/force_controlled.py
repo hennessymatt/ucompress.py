@@ -74,7 +74,6 @@ class ForceControlled(Experiment):
         else:
             print(sol)
             raise Exception('ERROR: solver for initial response did not converge')
-            return
         
         # compute fluid load fraction
         self.compute_fluid_load_fraction()
