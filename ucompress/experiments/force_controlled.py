@@ -7,14 +7,14 @@ class ForceControlled(Experiment):
     A class for force-controlled experiments
     """
 
-    def __init__(self, pars, model):
+    def __init__(self, model, pars):
         """
         Constructor, inherits the attribes from the Experiment
         class and adds a few more associated with specific 
         Jacobian entries
         """
 
-        super().__init__(pars, model)
+        super().__init__(model, pars)
         self.loading = 'force'
 
         N = self.N

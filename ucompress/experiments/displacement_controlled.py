@@ -4,9 +4,9 @@ from scipy.optimize import root
 
 class DisplacementControlled(Experiment):
 
-    def __init__(self, pars, model):
+    def __init__(self, model, pars):
 
-        super().__init__(pars, model)
+        super().__init__(model, pars)
         self.loading = 'displacement'
 
         # preallocate some more variables
