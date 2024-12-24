@@ -4,7 +4,7 @@ class Parameters():
 
     The parameter attributes are split into two main dictionaries:
 
-    physical:       parameter values associate with the physical system,
+    dimensional:    parameter values associate with the physical system,
                     e.g. the material or the experiment
                     
     computational:  computational parameter values assigned by the user.
@@ -43,8 +43,8 @@ class Parameters():
     """
     def __init__(self):
 
-        # empty dicts to store physical and computational parameters
-        self.physical = {}
+        # empty dicts to store dimensional (physical) and computational parameters
+        self.dimensional = {}
         self.computational = {}
 
 
@@ -79,18 +79,8 @@ class Parameters():
         if using a more complex model with extra parameters.
         """
 
-        # overwrite the physical dictionary with non-dim values
-        self.physical = {
-            "R": self.dimensional["R"] / self.scaling["space"],
-            "E_m": self.dimensional["E_m"] / self.scaling["stress"],
-            "nu_m": self.dimensional["nu_m"],
-            "k_0": self.dimensional["k_0"] / self.scaling["permeability"],
-            "phi_0": self.dimensional["phi_0"],
-            "lam_z": self.dimensional["lam_z"],
-            "F": self.dimensional["F"] / self.scaling["force"],
-            "t_start": self.dimensional["t_start"] / self.scaling["time"],
-            "t_end": self.dimensional["t_end"] / self.scaling["time"]
-        }
+        # copy the dimensional dict into the physical (non-dim) dict
+        self.physical = self.dimensional.copy()
 
 
     def update(self, par = None, val = None):
@@ -109,3 +99,33 @@ class Parameters():
 
         self.compute_scaling_factors()
         self.non_dimensionalise()
+
+
+    def __str__(self):
+        """
+        Controls how Parameter objects are printed with Python's
+        print function
+        """
+
+        str = (
+            'Dimensional parameter values (SI units)' +
+            '\n' + 
+            '---------------------------------------' +
+            '\n'
+        )
+        for k in self.dimensional:
+            str += f'{k} = {self.dimensional[k]:.2e}\n'
+
+        str += (
+            '\n' +
+            'Computational parameter values' +
+            '\n' + 
+            '-----------------------------------------' +
+            '\n'
+        )
+
+        for k in self.computational:
+            str += f'{k} = {self.computational[k]   }\n'
+
+
+        return str
