@@ -20,14 +20,13 @@ class Experiment():
 
         self.preallocate()
 
-        # set default solver options
+        # Set the default solver options
         self.solver_opts = {
             "jacobian": "analytical", # use analytical Jacobian for Newton iterations
             "monitor_convergence": False, # monitor convergence of newton iterations
             "newton_max_iterations": 10, # maximum number of newton iterations
             "newton_tol": 1e-6 # newton convergence tolerance
         }
-
 
     def preallocate(self):
         """
@@ -197,14 +196,14 @@ class Experiment():
         return X, conv
     
 
-    def transient_response(self):
+    def transient_response(self, solver_opts = "default"):
         """
         Time steps the problem using the implicit Euler
         method. 
 
         Inputs
         ------
-        opts: an optional argument that overwrites the default
+        solver_opts: an optional argument that overwrites the default
         options for the newton solver
 
 
@@ -212,6 +211,11 @@ class Experiment():
         -------
         sol: A Solution object that contains the solution components
         """
+
+        # overwrite the default solver options
+        if solver_opts != "default":
+            self.solver_opts = solver_opts
+        
 
         # initalise solution object
         sol = Solution(self.pars)
