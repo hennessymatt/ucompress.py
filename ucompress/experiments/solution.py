@@ -17,6 +17,9 @@ class Solution():
         # extract number of grid points
         N = pars.computational["N"]
 
+        # extract radius of sample
+        R = pars.physical["R"]
+
         # compute number of time steps and size of time steps
         self.compute_times(pars)
         
@@ -28,7 +31,7 @@ class Solution():
             self.t = self.t[:Nt]
 
         # compute the spatial grid points
-        self.r = (1 + np.flip(np.cos(np.linspace(0, np.pi, N)))) / 2
+        self.r = R * (1 + np.flip(np.cos(np.linspace(0, np.pi, N)))) / 2
 
         # Preallocate NumPy arrays for solution components
         self.u = np.zeros((N, Nt + 1))
