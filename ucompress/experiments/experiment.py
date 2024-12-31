@@ -38,6 +38,9 @@ class Experiment():
         N = self.pars.computational["N"]
         self.N = N
 
+        # sample radius
+        R = self.pars.physical["R"]
+
         # indices
         self.ind_u = np.arange(N)
         self.ind_p = np.arange(N, 2*N)
@@ -45,8 +48,8 @@ class Experiment():
 
         # build operators
         D, y = cheb(self.N)
-        self.D = 2 * D
-        self.r = (y + 1) / 2
+        self.D = 2 * D / R
+        self.r = R * (y + 1) / 2
 
         self.I = np.eye(N)
 
