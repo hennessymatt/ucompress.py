@@ -25,7 +25,8 @@ class Experiment():
             "jacobian": "analytical", # use analytical Jacobian for Newton iterations
             "monitor_convergence": False, # monitor convergence of newton iterations
             "newton_max_iterations": 10, # maximum number of newton iterations
-            "newton_tol": 1e-6 # newton convergence tolerance
+            "abs_tol": 1e-6, # absolute error (of residual) convergence tolerance
+            "rel_tol": 1e-8 # relative error (of residual) convergence tolerance
         }
 
     def preallocate(self):
@@ -166,11 +167,15 @@ class Experiment():
             # compute norm of residual
             nf = np.linalg.norm(self.FUN)
 
+            # store initial residual norm for rel_tol convergence
+            if n == 0:
+                nf_0 = nf
+
             if self.solver_opts["monitor_convergence"]:
                 print(f'norm(F) = {nf:.4e}')
 
             # check for convergence
-            if nf < self.solver_opts["newton_tol"]:
+            if nf < self.solver_opts["abs_tol"] or nf / nf_0 < self.solver_opts["rel_tol"]:
                 conv = True
                 break
 
