@@ -153,13 +153,16 @@ class ForceControlled(Experiment):
         X - the initial guess of the solution
         """
 
+        R = self.pars.physical["R"]
+        t_pe = R**2 / self.pars.physical["k_0"] / self.pars.physical["E_m"]
+
         # compute the initial response
         self.initial_response()
 
         Pi = self.osmosis.eval_osmotic_pressure(self.lam_r**2 * self.lam_z)
 
         # assume a boundary-layer-type solution for the pressure
-        self.p = (self.p[0] - Pi) * (1 - np.exp(-(1-self.r) / sol.t[1]**(1/2))) + Pi
+        self.p = (self.p[0] - Pi) * (1 - np.exp(-(1-self.r / R) / (sol.t[1]/t_pe)**(1/2))) + Pi
 
         # set the initial guess of the solution
         X = np.r_[
