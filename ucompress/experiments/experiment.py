@@ -25,7 +25,7 @@ class Experiment():
             "jacobian": "analytical", # use analytical Jacobian for Newton iterations
             "monitor_convergence": False, # monitor convergence of newton iterations
             "newton_max_iterations": 10, # maximum number of newton iterations
-            "abs_tol": 1e-6, # absolute error (of residual) convergence tolerance
+            "abs_tol": 1e-8, # absolute error (of residual) convergence tolerance
             "rel_tol": 1e-8 # relative error (of residual) convergence tolerance
         }
 
