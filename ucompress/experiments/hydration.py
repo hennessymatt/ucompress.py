@@ -27,6 +27,14 @@ class Hydration():
         phi_0 - the porosity
         """
 
+        """
+        Check that the hydration stretches are set to one
+        """
+        if abs(self.pars.physical["beta_r"] - 1) > 1e-6:
+            raise Exception('beta_r > 1 in hydration solver')
+        if abs(self.pars.physical["beta_z"] - 1) > 1e-6:
+            raise Exception('beta_z > 1 in hydration solver')
+
         # Set the initial guess if not passed by the user
         if lam_r == None:
             lam_r = 1.1
