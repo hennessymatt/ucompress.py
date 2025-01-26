@@ -26,7 +26,8 @@ class Experiment():
             "monitor_convergence": False, # monitor convergence of newton iterations
             "newton_max_iterations": 10, # maximum number of newton iterations
             "abs_tol": 1e-8, # absolute error (of residual) convergence tolerance
-            "rel_tol": 1e-8 # relative error (of residual) convergence tolerance
+            "rel_tol": 1e-8, # relative error (of residual) convergence tolerance
+            "div_tol": 1e20 # max absolute error (divergence criteria)
         }
 
     def preallocate(self):
@@ -180,7 +181,7 @@ class Experiment():
                 break
 
             # check for divergence
-            if nf > 1e10:
+            if nf > self.solver_opts["div_tol"]:
                 print('Newton iterations not converging')
                 print(f'norm(F) = {nf:.4e}')
                 break
