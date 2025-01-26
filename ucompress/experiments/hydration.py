@@ -34,6 +34,12 @@ class Hydration():
             raise Exception('beta_r > 1 in hydration solver')
         if abs(self.pars.physical["beta_z"] - 1) > 1e-6:
             raise Exception('beta_z > 1 in hydration solver')
+        
+        """
+        Check that the initial porosity is zero (dry gel)
+        """
+        if self.pars.physical["phi_0"] > 1e-3:
+            raise Exception('phi_0 > 0 in hydration solver')
 
         # Set the initial guess if not passed by the user
         if lam_r == None:
@@ -77,10 +83,10 @@ class Hydration():
             J = lam_r**2 * lam_z
             phi_0 = 1 - 1 / J
 
-            print(f'Volumetric expansion due to hydration: {J:.2f}')
-            print(f'Fluid fraction in hydrated state: {phi_0:.2f}')
-            print(f'Radial stretch: {lam_r:.2f}')
-            print(f'Axial stretch: {lam_z: .2f}')
+            print(f'Volumetric expansion due to hydration: {J:.4f}')
+            print(f'Fluid fraction in hydrated state: {phi_0:.4f}')
+            print(f'Radial stretch: {lam_r:.4f}')
+            print(f'Axial stretch: {lam_z: .4f}')
             
             return lam_r, lam_z, phi_0
 
