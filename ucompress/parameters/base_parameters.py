@@ -41,12 +41,43 @@ class Parameters():
     variables of a dimensional variable changes.
 
     """
-    def __init__(self):
+    def __init__(self, nondim = False):
+        """
+        Constructor.  The keyword arg allows the user to specify whether the 
+        parameters should be non-dimensionalised 
+        """
 
-        # empty dicts to store dimensional (physical) and computational parameters
-        self.dimensional = {}
+        # Save the non-dim flag
+        self.nondim = nondim
+
+        # Create the parameter dicts by calling the method from the
+        # child class
+        self.set_parameters()
+
+        # Non-dimensionalise if user chooses this option
+        if nondim:
+
+            # create a new dict to store the dimensional parameter values
+            self.dimensional = self.physical.copy()
+
+            # compute the scaling factors needed to non-dim the problem
+            self.compute_scaling_factors()
+
+            # non-dim the parameters in the physical dict (overwritten)
+            self.non_dimensionalise()
+
+    def set_parameters(self):
+        """
+        Template method for setting the relevant parameter dicts. In
+        practice, this method is overloaded by child classes that 
+        contain parameter values
+        """
+
+        # Stores physical parameter values
+        self.physical = {}
+
+        # Stores computational parameter values
         self.computational = {}
-
 
     def compute_scaling_factors(self):
         """"
@@ -79,26 +110,55 @@ class Parameters():
         if using a more complex model with extra parameters.
         """
 
-        # copy the dimensional dict into the physical (non-dim) dict
-        self.physical = self.dimensional.copy()
+        # non-dimensionalise all dimensional quantities
+        self.physical["R"] /= self.scaling["space"]
+        self.physical["E_m"] /= self.scaling["stress"]
+        self.physical["k_0"] /= self.scaling["permeability"]
+        self.physical["F"] /= self.scaling["force"]
+        self.physical["t_start"] /= self.scaling["time"]
+        self.physical["t_end"] /= self.scaling["time"]
 
 
     def update(self, par = None, val = None):
         """
         Updates the scaling factors and non-dim parameters if
-        the value of a dimensional parameter changes
+        the value of a dimensional parameter changes.  If 
+        dimensional parameters are being used, then this
+        just updates the entries in the physical/computational
+        dicts
         """
 
+        """
+        If using non-dim parameters, copy the dimensional dict
+        into the physical dict so it can be overwritten with
+        the new non-dim values
+        """
+        if self.nondim:
+            self.physical = self.dimensional.copy()
+
+        """
+        Update the parameter values in the relevant dict
+        """
         if par != None and val != None:
-            if par in self.dimensional:
-                self.dimensional[par] = val
+            if par in self.physical:
+                self.physical[par] = val
             elif par in self.computational:
                 self.computational[par] = val
             else:
                 raise Exception('ERROR: parameter not found in dictionaries')
 
-        self.compute_scaling_factors()
-        self.non_dimensionalise()
+        """
+        Non-dim again if required
+        """
+        if self.nondim:
+            # update the dimensional dict
+            self.dimensional = self.physical.copy()
+
+            # recompute scaling factor
+            self.compute_scaling_factors()
+
+            # non-dimensionalise
+            self.non_dimensionalise()
 
 
     def __str__(self):
@@ -108,14 +168,35 @@ class Parameters():
         """
 
         str = (
-            'Dimensional parameter values (SI units)' +
+            'Dimensional parameter values' +
             '\n' + 
             '---------------------------------------' +
             '\n'
         )
-        for k in self.dimensional:
-            str += f'{k} = {self.dimensional[k]:.2e}\n'
 
+        # Extract the dimensional parameter set
+        if self.nondim:
+            dimensional = self.dimensional
+        else:
+            dimensional = self.physical
+
+        for k in dimensional:
+            str += f'{k} = {dimensional[k]:.2e}\n'
+
+        # Print the non-dim parameters if they are being used
+        if self.nondim:
+            str += (
+                '\n' +
+                'Non-dimensional parameter values' +
+                '\n' + 
+                '-----------------------------------------' +
+                '\n'
+            )
+
+            for k in self.physical:
+                str += f'{k} = {self.physical[k]:.2e}\n'
+
+        # Prints the computational parameters
         str += (
             '\n' +
             'Computational parameter values' +
