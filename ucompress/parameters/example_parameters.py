@@ -31,8 +31,8 @@ class NeoHookean(Parameters):
             "phi_0": 0.8,       # initial porosity (-)
 
             "lam_z": 0.5,       # axial strain (-)
-            "beta_r": 1,        # radial pre-strain (-)
-            "beta_z": 1,        # axial pre-strain (-)
+            "beta_r": 1,        # radial pre-stretch (-)
+            "beta_z": 1,        # axial pre-stretch (-)
 
             "F": -1,            # applied force (N)
 
@@ -87,8 +87,8 @@ class Hydrogel(Parameters):
             "G_T": G_T,         # Thermal stiffness (Pa)
             "chi": 0.5,         # Flory interaction parameter (-)
 
-            "beta_r": 1,        # radial pre-strain (-)
-            "beta_z": 1,        # axial pre-strain (-)
+            "beta_r": 1,        # radial pre-stretch (-)
+            "beta_z": 1,        # axial pre-stretch (-)
             "phi_0": 0.0,       # initial porosity (-)
 
             "F": -1,            # applied force (N)
@@ -156,8 +156,8 @@ class FibreReinforced(Parameters):
 
             "k_0": 2e-13,       # initial hydraulic conductivity (m2 / Pa / s)
 
-            "beta_r": 1,        # radial pre-strain (-)
-            "beta_z": 1,        # axial pre-strain (-)
+            "beta_r": 1,        # radial pre-stretch (-)
+            "beta_z": 1,        # axial pre-stretch (-)
             "phi_0": 0.0,       # initial porosity (-)
 
             "F": -1,            # applied force (N)
@@ -229,8 +229,8 @@ class FibreRecruitment(Parameters):
 
             "k_0": 2e-13,       # initial hydraulic conductivity (m2 / Pa / s)
 
-            "beta_r": 1,        # radial pre-strain (-)
-            "beta_z": 1,        # axial pre-strain (-)
+            "beta_r": 1,        # radial pre-stretch (-)
+            "beta_z": 1,        # axial pre-stretch (-)
             "phi_0": 0.0,       # initial porosity (-)
 
             "F": -1,            # applied force (N)

@@ -4,7 +4,7 @@ class Parameters():
 
     The parameter attributes are split into two main dictionaries:
 
-    dimensional:    parameter values associate with the physical system,
+    physical:       parameter values associate with the physical system,
                     e.g. the material or the experiment
                     
     computational:  computational parameter values assigned by the user.
@@ -12,22 +12,25 @@ class Parameters():
     
     The dictionary of physical parameters *must* contain key/values for:
 
-    R:      the initial radius of the sample
-    E_m:    the Young's modulus of the gel matrix
-    nu_m:   the Poisson's ratio of the gel matrix
-    k_0:    the initial permeability
-    phi_0:  the initial porosity (fluid fraction)
-    lam_z:  for displacement-controlled experiments, this is the imposed
-            axial strain.  For force-controlled experiments, this is 
-            the initial guess of the axial strain
-    F:      for force-controlled experiments, this is the imposed force
-            on the upper platten.  For displacement-controlled experiments,
-            this value is not used and does not need to be assigned
+    R:          Radius of the sample in reference configuration
+    E_m:        Young's modulus of the gel matrix
+    nu_m:       Poisson's ratio of the gel matrix
+    k_0:        Initial permeability in reference configuration
+    phi_0:      Initial porosity (fluid fraction) in ref configuration
+    lam_z:      For displacement-controlled experiments, this is the imposed
+                axial stretch.  For force-controlled experiments, this is 
+                the initial guess of the axial stretch
+    beta_r:     Radial pre-stretch (e.g. from hydration)
+    beta_z:     Axial pre-stretch (e.g. from hydration)
+    F:          For force-controlled experiments, this is the imposed force
+                on the upper platten.  For displacement-controlled experiments,
+                this value is not used and does not need to be assigned
+    t_start:    the first time step of the simulation
     t_end:      the time of the final time step
 
     Of course, more parameters can be added to the above if needed by the 
     model.
-    
+        
     The dictionary of computational parameters must contain key/values for:
 
     N:          the number of spatial grid points
