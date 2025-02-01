@@ -9,8 +9,7 @@ is used in Newton iterations for speed.
 
 Features of the code include:
 * Displacement- and force-controlled loading
-* Accounting for large deformation (finite strains)
-* Neo-Hookean material responses
+* Finite strains and neo-Hookean material responses
 * Material reinforcement with a transversely isotropic fibre network
 * Multiple models for the engagement of fibre network with deformation
 * Deformation-dependent permeabilities
