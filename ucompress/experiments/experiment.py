@@ -84,20 +84,43 @@ class Experiment():
 
     def compute_stretches(self, u):
         """
-        Computes the radial and orthoradial stretches
+        Computes the radial and orthoradial stretches.
+
+        Arguments
+        ---------
+        u: the radial displacement
+
+        Returns
+        -------
+        lam_r: the radial stretch
+        lam_t: the orthoradial stretch
+
         """
+
+        # Compute radial stretch
         lam_r = 1 + self.D @ u
+
+        # Compute orthoradial stretch.  The first component is obtained
+        # using L'Hopital's rule  
         lam_t = np.r_[1 + self.D[0,:] @ u, 1 + u[1:] / self.r[1:]]
 
+        # Return the stretches
         return lam_r, lam_t
 
 
     def compute_J(self):
         """
-        Computes the Jacobian (J = det(F)) and its derivatives
+        Computes the Jacobian (J = det(F)) and its derivatives with respect
+        to the displacement and axial stretch
         """
+
+        # Compute J
         self.J = self.lam_r * self.lam_t * self.lam_z
+        
+        # Compute derivative of J wrt displacement u
         self.J_u = self.lam_z * (np.diag(self.lam_t) @ self.lam_r_u + np.diag(self.lam_r) @ self.lam_t_u)
+        
+        # Compute derivative of J wrt axial stretch lambda_z
         self.J_l = self.lam_r * self.lam_t
 
 
@@ -105,13 +128,20 @@ class Experiment():
         """
         Computes the pressure if the deformation is known
         """
+
+        # Computer permeability and osmotic pressure
         k = self.perm.eval_permeability(self.J)
         Pi = self.osmosis.eval_osmotic_pressure(self.J)
 
+        # Construct RHS of linear ODE
         rhs = self.r * self.lam_r**2 / 2 / k / self.J / self.dt * (
             self.lam_t**2 * self.lam_z - self.lam_t_old**2 * self.lam_z_old
             ) + self.D @ Pi
+        
+        # Impose the boundary condition p = Pi at r = R
         rhs[-1] = Pi[-1]
+
+        # Solve
         self.p = np.linalg.solve(self.J_pp, rhs)
 
 
@@ -121,8 +151,10 @@ class Experiment():
         and pressure are known using the trapezoidal rule
         """
 
+        # Evaluate the mechanical stress
         _, _, S_z = self.mech.eval_stress(self.lam_r, self.lam_t, self.lam_z)
 
+        # Compute the force
         self.F = 2 * np.pi * np.sum(self.w * 
                                     (S_z - self.p * self.lam_r * self.lam_t) 
                                     * self.r)
@@ -145,7 +177,16 @@ class Experiment():
 
     def newton_iterations(self, X):
         """
-        Implementation of Newton's method
+        Implementation of Newton's method.
+
+        Arguments
+        ----------
+        X:  The initial guess of the solution
+
+        Returns
+        --------
+        X:      The final solution approximation
+        conv:   Convergence flag
         """
 
         conv = False
@@ -307,15 +348,20 @@ class Experiment():
         Computes the Jacobian using finite differences
         """
         
+        # Increment for finite differences
         dx = 1e-5
         N = self.N
 
+        # Pre-allocate Jacobian
         if self.loading == 'displacement':
             self.JAC = np.zeros((N, N))
         else:
             self.JAC = np.zeros((2*N+1, 2*N+1))
 
+        # Loop over u components
         for i in range(N):
+
+            # Forwards approximation
             self.u[i] += dx
             self.lam_r, self.lam_t = self.compute_stretches(self.u)
             self.compute_J()
@@ -323,6 +369,7 @@ class Experiment():
 
             Fp = self.FUN.copy()
 
+            # Backwards difference
             self.u[i] -= 2 * dx
             self.lam_r, self.lam_t = self.compute_stretches(self.u)
             self.compute_J()
@@ -330,64 +377,56 @@ class Experiment():
 
             Fm = self.FUN.copy()
 
+            # Central difference
             dF = (Fp - Fm) / 2 / dx
             self.JAC[:, i] = dF
 
+            # Reset the value of u
             self.u[i] += dx
             self.lam_r, self.lam_t = self.compute_stretches(self.u)
             self.compute_J()
             self.build_residual()
 
+        # Add extra Jacobian entries if solving for pressure and lam_z
         if self.loading == 'force':
             for i in range(N):
+
+                # Forwards
                 self.p[i] += dx
                 self.build_residual()
                 Fp = self.FUN.copy()
 
+                # Backwards
                 self.p[i] -= 2*dx
                 self.build_residual()
                 Fm = self.FUN.copy()
 
+                # Central difference
                 dF = (Fp - Fm) / 2 / dx
                 self.JAC[:, self.ind_p[i]] = dF
 
+                # Reset
                 self.p[i] += dx
                 self.build_residual()
 
+            # Forwards
             self.lam_z += dx
             self.compute_J()
             self.build_residual()
             Fp = self.FUN.copy()
 
+            # Backwards
             self.lam_z -= 2 * dx
             self.compute_J()
             self.build_residual()
             Fm = self.FUN.copy()
 
+            # Central differencing
             dF = (Fp - Fm) / 2 / dx
             self.JAC[:, self.ind_l] = dF
 
+            # Reset
             self.lam_z += dx
             self.compute_J()
             self.build_residual()
-
-    def check_jacobian(self, X):
-            """
-            Compares the analytical and numerical Jacobians for
-            debugging
-            """
-
-            # compute the numerical Jacobian using finite differences
-            self.numerical_jacobian()
-            J_n = self.JAC.copy()
-
-            # compute the analytical Jacobian
-            self.build_jacobian()
-            J_a = self.JAC.copy()
-
-            # compute the error row-by-row and print the result
-            for i in range(len(X)):
-                diff = np.linalg.norm(J_a[i,:] - J_n[i,:]) / np.linalg.norm(J_n[i,:], ord = np.inf)
-                print(f'Row {i}: error = {diff:.4e}')         
-        
 
