@@ -42,18 +42,20 @@ class DisplacementControlled(Experiment):
         Computes the steady-state response
         """
 
+        # Set the axial stretch
+        self.lam_z = self.pars.physical["lam_z"]
+
         # helper function for solving the nonlinear problem for
         # the steady response
         def fun(X):
-            self.lam_r = X[0]
-            self.lam_t = X[0]
+            self.lam_r = X
+            self.lam_t = X
             self.p = self.osmosis.eval_osmotic_pressure(self.lam_r**2 * self.lam_z)
             S_r, _, _ = self.mech.eval_stress(self.lam_r, self.lam_r, self.lam_z)
             self.compute_force()
             
-            return np.array([
-                S_r - self.lam_r * self.lam_z * self.p,
-            ])
+            return S_r - self.lam_r * self.lam_z * self.p
+            
         
         # solve the nonlinear scalar equation for the axial stretch
         steady_sol = root(fun, x0 = np.array([1.1]))
