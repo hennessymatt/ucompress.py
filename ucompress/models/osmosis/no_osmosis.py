@@ -1,5 +1,5 @@
 from .base_osmosis import OsmoticPressure
-from numpy import zeros
+from numpy import zeros, shape
 
 class NoOsmosis(OsmoticPressure):
     """
@@ -20,14 +20,33 @@ class NoOsmosis(OsmoticPressure):
 
     def eval_osmotic_pressure(self, J):
         """
-        Method that numerically evaluates Pi and returns a NumPy array
+        Method that numerically evaluates Pi.
+
+        Arguments
+        --------
+        J: the determinant (float or NumPy array)
+
+        Returns
+        -------
+        Zero (of the same type as J)
+
         """
-        return zeros(len(J))
+
+        return 0 * J
     
     def eval_osmotic_pressure_derivative(self, J):
         """
         Method that numerically evaluates the derivatives of Pi and returns
-        NumPy arrays
+        
+        Arguments
+        --------
+        J: the determinant (float or NumPy array)
+
+        Returns
+        -------
+        Zero (of the same typeas J)
+
         """
-        return zeros(len(J))
+
+        return 0 * J
         
