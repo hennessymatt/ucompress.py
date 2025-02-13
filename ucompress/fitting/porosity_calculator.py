@@ -13,18 +13,18 @@ class PorosityCalculator():
         params = self.params
 
         # solvent (water) mass fraction
-        psi = params.dimensional["psi_0"]
+        psi = params.physical["psi_0"]
 
         # solvent (water) density
-        rho_w = params.dimensional["rho_w"]
+        rho_w = params.physical["rho_w"]
 
         # matrix density
-        rho_m = params.dimensional["rho_m"]
+        rho_m = params.physical["rho_m"]
 
         # load fibre properties and calculate mean solid density
         if have_fibres:
-            rho_f = params.dimensional["rho_f"]
-            Phi_f = params.dimensional["Phi_f"]
+            rho_f = params.physical["rho_f"]
+            Phi_f = params.physical["Phi_f"]
 
             rho_s = Phi_f * rho_f + (1 - Phi_f) * rho_m
 
@@ -40,7 +40,7 @@ class PorosityCalculator():
 
         # update the parameters
         if update_params:
-            params.dimensional["phi_0"] = phi
+            params.physical["phi_0"] = phi
             params.update()
 
             return params
