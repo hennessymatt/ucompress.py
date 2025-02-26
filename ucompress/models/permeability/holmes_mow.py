@@ -3,7 +3,7 @@ from .base_permeability import sp
 
 class HolmesMow(Permeability):
     """
-    Defines the Kozeny-Carman permeability.
+    Defines the Holmes-Mow permeability.
     The constructor allows the user to pass custom values
     for the exponents.
     """
@@ -13,6 +13,9 @@ class HolmesMow(Permeability):
         Constructor
         """
         super().__init__()
+
+        # Label
+        self.label = 'Holmes-Mow'
 
         a = sp.Symbol('a')
         M = sp.Symbol('M')

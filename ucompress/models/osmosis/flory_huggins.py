@@ -12,6 +12,9 @@ class FloryHuggins(OsmoticPressure):
     def __init__(self):
         super().__init__()
 
+        # Label
+        self.label = 'Flory-Huggins'
+
         chi = sp.Symbol('chi')  # Flory interaction parameter
         G_T = sp.Symbol('G_T')  # Thermal stiffness = R_g * T / V_w 
         alpha_f = sp.Symbol('alpha_f') # Nominal fibre fraction

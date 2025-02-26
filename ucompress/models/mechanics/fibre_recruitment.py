@@ -10,6 +10,9 @@ class FibreRecruitment(Hyperelastic):
     def __init__(self, pars = {}, distribution = 'linear', homogeneous = False):
         super().__init__()
 
+        # Label
+        self.label = 'Fibre recruitment'
+
         # Definition of constants in the model as SymPy symbols
         self.E_m = sp.Symbol('E_m')
         self.nu_m = sp.Symbol('nu_m')

@@ -10,6 +10,10 @@ class Poroelastic():
         """Constructor requires a mechanics, permeability,
         and parameters object"""
 
+        # Label
+        self.label = 'Poroelastic'
+
+
         self.mechanics = mechanics
         self.permeability = permeability
         self.osmosis = NoOsmosis()
@@ -40,6 +44,9 @@ class Hydrogel():
     def __init__(self, mechanics, permeability, osmosis, parameters):
         """Constructor requires a mechanics, permeability, osmosis,
         and parameters object"""
+
+        # Label
+        self.label = 'Hydrogel'
 
         self.mechanics = mechanics
         self.permeability = permeability

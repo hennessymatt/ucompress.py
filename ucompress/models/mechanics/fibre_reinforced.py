@@ -13,6 +13,9 @@ class FibreReinforced(Hyperelastic):
     def __init__(self, homogeneous = False):
         super().__init__()
 
+        # Label
+        self.label = 'Fibre reinforced'
+
         # Definition of constants in the model as SymPy symbols
         self.E_m = sp.Symbol('E_m')
         self.nu_m = sp.Symbol('nu_m')

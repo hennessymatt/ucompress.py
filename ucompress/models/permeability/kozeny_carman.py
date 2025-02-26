@@ -3,8 +3,6 @@ from .base_permeability import Permeability
 class KozenyCarman(Permeability):
     """
     Defines the Kozeny-Carman permeability.
-    The constructor allows the user to pass custom values
-    for the exponents.
     """
 
     def __init__(self):
@@ -12,6 +10,9 @@ class KozenyCarman(Permeability):
         Constructor
         """
         super().__init__()
+
+        # Label
+        self.label = 'Kozeny-Carmen'
 
         # Introduce a small number to avoid dividing by zero if the initial
         # porosity is zero (as for a dry hydrogel)

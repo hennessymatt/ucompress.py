@@ -15,6 +15,9 @@ class Constant(Permeability):
         """
         super().__init__()
 
+        # Label
+        self.label = 'Constant'
+
         # Eulerian permeability
         self.k = self.k_0
         
