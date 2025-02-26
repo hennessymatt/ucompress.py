@@ -158,7 +158,7 @@ class FibreReinforced(Parameters):
 
             "beta_r": 1,        # radial pre-stretch (-)
             "beta_z": 1,        # axial pre-stretch (-)
-            "phi_0": 0.0,       # initial porosity (-)
+            "phi_0": 0.8,       # initial porosity (-)
 
             "F": -1,            # applied force (N)
             "lam_z": 0.5,       # axial strain (-)
@@ -231,7 +231,7 @@ class FibreRecruitment(Parameters):
 
             "beta_r": 1,        # radial pre-stretch (-)
             "beta_z": 1,        # axial pre-stretch (-)
-            "phi_0": 0.0,       # initial porosity (-)
+            "phi_0": 0.8,       # initial porosity (-)
 
             "F": -1,            # applied force (N)
             "lam_z": 0.5,       # axial strain (-)
