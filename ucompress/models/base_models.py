@@ -7,8 +7,11 @@ class Poroelastic():
     """
 
     def __init__(self, mechanics, permeability, parameters):
-        """Constructor requires a mechanics, permeability,
-        and parameters object"""
+        """
+        Constructor requires a mechanics, permeability,
+        and parameters object.  The permeability object can
+        be set to None if it is not required in the experiment.
+        """
 
         # Label
         self.label = 'Poroelastic'
@@ -32,13 +35,15 @@ class Poroelastic():
         """
 
         self.mechanics.lambdify(parameters)
-        self.permeability.lambdify(parameters)
+        if self.permeability is not None:
+            self.permeability.lambdify(parameters)
 
 class Hydrogel():
     """
     A class for hydrogels, i.e. poroelastic materials with osmotic
     effects.  The flow is driven by gradients in composition
-    and pressure.
+    and pressure. The permeability object can
+    be set to None if it is not required in the experiment.
     """
 
     def __init__(self, mechanics, permeability, osmosis, parameters):
@@ -66,5 +71,6 @@ class Hydrogel():
         """
 
         self.mechanics.lambdify(parameters)
-        self.permeability.lambdify(parameters)
+        if self.permeability is not None:
+            self.permeability.lambdify(parameters)
         self.osmosis.lambdify(parameters)
