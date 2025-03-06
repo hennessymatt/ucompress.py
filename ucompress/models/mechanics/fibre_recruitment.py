@@ -53,9 +53,14 @@ class FibreRecruitment(Hyperelastic):
             w2 = (4 * (-lam_c + lam_a) * lam * (lam_b + lam / 2) * sp.log(lam) - 4 * lam * (lam_a + lam / 2) * (lam_b - lam_c) * sp.log(lam_a) - 4 * (-lam_b + lam_a) * lam * (lam_c + lam / 2) * sp.log(lam_c) + (-lam_c + lam_a) * ((lam_b - lam_c) * lam_a + lam_b * lam_c + 4 * lam * lam_b - 5 * lam ** 2)) / (-lam_b + lam_a) / (-lam_c + lam_a) / (lam_b - lam_c)
             w3 = (-4 * lam * (lam_a + lam / 2) * (lam_b - lam_c) * sp.log(lam_a) + 4 * (-lam_c + lam_a) * lam * (lam_b + lam / 2) * sp.log(lam_b) + (-lam_b + lam_a) * ((-2 * lam ** 2 - 4 * lam * lam_c) * sp.log(lam_c) + (lam_b - lam_c) * (-lam_c + lam_a))) / (-lam_b + lam_a) / (-lam_c + lam_a) / (lam_b - lam_c)
 
-            W1 = self.average(w1)
-            W2 = self.average(W2)
-            W3 = self.average(w3)
+            if not(homogeneous):
+                W1 = self.average(w1)
+                W2 = self.average(w2)
+                W3 = self.average(w3)
+            else:
+                W1 = w1
+                W2 = w2
+                W3 = w3
 
             W_f = self.E_f / 2 * sp.Piecewise(
                 (0, Lam < lam_a),
@@ -67,11 +72,15 @@ class FibreRecruitment(Hyperelastic):
         elif distribution == 'linear':
             lam_m = sp.Symbol('lam_m')
 
-            w2 = ((-2 * lam ** 2 - 4 * lam * lam_m) * sp.log(lam) + (2 * lam_m + 3) * lam ** 2 - 4 * lam - 2 * lam_m + 1) / (lam_m - 1) ** 2
-            w3 = ((-2 * lam ** 2 - 4 * lam * lam_m) * sp.log(lam_m) + (lam_m - 1) * (2 * lam ** 2 + 4 * lam + lam_m - 1)) / (lam_m - 1) ** 2
-
-            W2 = self.average(w2)
-            W3 = self.average(w3)
+            w2 = (2*lam**2*lam_m - 2*lam**2*sp.log(lam) + 3*lam**2 - 4*lam*lam_m*sp.log(lam) - 4*lam - 2*lam_m + 1)/(lam_m**2 - 2*lam_m + 1)
+            w3 = (2*lam**2*lam_m - 2*lam**2 - 2*lam*(lam + 2*lam_m)*sp.log(lam_m) - 4*lam - lam_m**2 + 2*lam_m*(2*lam + lam_m) - 2*lam_m + 1)/(lam_m**2 - 2*lam_m + 1)
+            
+            if not(homogeneous):
+                W2 = self.average(w2)
+                W3 = self.average(w3)
+            else:
+                W2 = w2
+                W3 = w3
 
             W_f = self.E_f / 2 * sp.Piecewise(
                 (0, Lam < 1),
