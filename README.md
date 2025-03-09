@@ -59,4 +59,4 @@ plt.plot(sol.t, sol.lam_z)
 ## Learning more
 
 To learn more about the capabilities of ucompress.py or to
-how to use it, please work through the [tutorials](/tutorials/).
+how to use it, please have a look at the [tutorials](/tutorials/).
