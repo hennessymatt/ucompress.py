@@ -9,6 +9,7 @@ keywords = [
     "poroelasticity",
     "biomechanics",
     "solid mechanics",
+    "hydrogels"
 ]
 version = "0.0.1"
 authors = [
@@ -25,5 +26,5 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/hennessymatt/UnconfinedCompression.git"
-Repository = "https://github.com/hennessymatt/UnconfinedCompression.git"
+Homepage = "https://github.com/hennessymatt/ucompress.py"
+Repository = "https://github.com/hennessymatt/ucompress.py"
