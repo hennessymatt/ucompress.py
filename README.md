@@ -57,13 +57,15 @@ sol = problem.transient_response()
 
 # plot the axial stretch vs time
 plt.plot(sol.t, sol.lam_z)
+plt.show()
 
 ```
 
-Changes to the model are straightforward and experiment are straightforward.
+Changes to the model and experiment are straightforward.
 The code below simulates a displacement-controlled unconfined compression
 experiment of a fibre-reinforced neo-Hookean material that accounts
-for slack in the fibre network.
+for slack in the fibre network.  The axial force needed to
+compress the sample is plotted as a function of time.
 
 ```python
 
@@ -78,6 +80,10 @@ model = uc.base_models.Poroelastic(mech, perm, pars)
 
 problem = uc.experiments.DisplacementControlled(model, pars)
 sol = problem.transient_response()
+
+# plot the force
+plt.plot(sol.t, sol.F)
+plt.show()
 ```
 
 ## Learning more
