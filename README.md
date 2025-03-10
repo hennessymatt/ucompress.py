@@ -22,13 +22,17 @@ of the model.
 
 ## Installing ucompress.py
 
-ucompress.py is available on PyPi and can be easily installed using pip:
+ucompress.py is available on PyPi and can be installed using pip:
 
 ```
 pip install ucompress
 ```
 
-The dependencies are minimal, all you need is SciPy, NumPy, and SymPy.
+The dependencies are minimal, all you need is SciPy, NumPy, and SymPy
+(these will automatically be installed alongside ucompress.py if
+you don't already have them).  We recommend using a [virtual 
+environment](https://docs.python.org/3/library/venv.html) when
+installing ucompress.py.
 
 ## Getting started
 
@@ -56,7 +60,29 @@ plt.plot(sol.t, sol.lam_z)
 
 ```
 
+Changes to the model are straightforward and experiment are straightforward.
+The code below simulates a displacement-controlled unconfined compression
+experiment of a fibre-reinforced neo-Hookean material that accounts
+for slack in the fibre network.
+
+```python
+
+import ucompress as uc
+import matplotlib.pyplot as plt
+
+pars = uc.parameters.example_parameters.FibreRecruitment()
+mech = uc.mechanics.FibreRecruitment(distribution = 'quartic')
+perm = uc.permeability.Constant()
+
+model = uc.base_models.Poroelastic(mech, perm, pars)
+
+problem = uc.experiments.DisplacementControlled(model, pars)
+sol = problem.transient_response()
+```
+
 ## Learning more
 
 To learn more about the capabilities of ucompress.py or to
 how to use it, please have a look at the [tutorials](/tutorials/).
+Please feel free to add a pull request if you would like
+to see a new tutorial added.
