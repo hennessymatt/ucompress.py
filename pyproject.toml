@@ -2,6 +2,9 @@
 requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
 
+[tool.setuptools]
+packages = ["ucompress"] 
+
 [project]
 name = "ucompress"
 description = "Simulates the unconfined compression of a poroelastic material"
@@ -11,12 +14,13 @@ keywords = [
     "solid mechanics",
     "hydrogels"
 ]
-version = "0.0.1"
+version = "0.0.2"
 authors = [
     { name = "Matthew Hennessy", email = "matthew.hennessy@bristol.ac.uk"}
 ]
 readme = "README.md"
-license = {file = "LICENSE.txt"}
+license = "GPL-3.0"
+license-files=["LICENSE.txt"]
 
 requires-python = ">= 3.8"
 dependencies = [
