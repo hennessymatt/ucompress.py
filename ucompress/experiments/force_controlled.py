@@ -81,9 +81,11 @@ class ForceControlled(Experiment):
         # create a solution object and store the solution
         sol = Solution(self.pars, 0)
         sol.u = self.u
-        sol.lam_z = self.lam_z
         sol.p = self.p
+        sol.lam_z = self.lam_z
         sol.F = self.F
+        sol.J = self.lam_r * self.lam_t * self.lam_z
+        sol.phi = 1 - (1 - self.pars.physical["phi_0"]) / sol.J
         sol.fluid_load_fraction = self.fluid_load_fraction
 
         return sol
@@ -133,9 +135,11 @@ class ForceControlled(Experiment):
         # create a solution object and store the solution
         sol = Solution(self.pars, 0)
         sol.u = steady_sol.x[0] * sol.r
-        sol.lam_z = steady_sol.x[1]
         sol.p = self.p
+        sol.lam_z = steady_sol.x[1]
         sol.F = self.F
+        sol.J = self.lam_r**2 * self.lam_z
+        sol.phi = 1 - (1 - self.pars.physical["phi_0"]) / sol.J
         sol.fluid_load_fraction = self.fluid_load_fraction
 
         return sol

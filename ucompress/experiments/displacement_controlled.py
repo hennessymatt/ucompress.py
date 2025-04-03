@@ -33,14 +33,21 @@ class DisplacementControlled(Experiment):
         sol.lam_z = self.lam_z
         sol.p = self.p
         sol.F = self.F
+        sol.J = self.lam_r * self.lam_t * self.lam_z
+        sol.phi = 1 - (1 - self.pars.physical["phi_0"]) / sol.J
         sol.fluid_load_fraction = self.fluid_load_fraction
 
         return sol
     
-    def steady_response(self):
+    def steady_response(self, lam_r_0 = None):
         """
-        Computes the steady-state response
+        Computes the steady-state response.  Allows the user
+        to provide an initial guess for the radial stretch.
         """
+
+        if lam_r_0 == None:
+            lam_r_0 = 1.1
+
 
         # Set the axial stretch
         self.lam_z = self.pars.physical["lam_z"]
@@ -53,12 +60,12 @@ class DisplacementControlled(Experiment):
             self.p = self.osmosis.eval_osmotic_pressure(self.lam_r**2 * self.lam_z)
             S_r, _, _ = self.mech.eval_stress(self.lam_r, self.lam_r, self.lam_z)
             self.compute_force()
-            
+
             return S_r - self.lam_r * self.lam_z * self.p
             
         
         # solve the nonlinear scalar equation for the axial stretch
-        steady_sol = root(fun, x0 = np.array([1.1]))
+        steady_sol = root(fun, x0 = np.array([lam_r_0]))
     
         # check if the solver converged
         if steady_sol.success == True:
@@ -74,7 +81,10 @@ class DisplacementControlled(Experiment):
         sol = Solution(self.pars, 0)
         sol.u = steady_sol.x[0] * sol.r
         sol.p = self.p
+        sol.lam_z = self.lam_z
         sol.F = self.F
+        sol.J = self.lam_r**2 * self.lam_z
+        sol.phi = 1 - (1 - self.pars.physical["phi_0"]) / sol.J
         sol.fluid_load_fraction = self.fluid_load_fraction
 
         return sol
