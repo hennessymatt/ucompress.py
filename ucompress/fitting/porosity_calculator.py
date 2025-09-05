@@ -40,7 +40,11 @@ class PorosityCalculator():
 
         # update the parameters
         if update_params:
-            params.physical["phi_0"] = phi
+            if params.nondim:
+                params.dimensional["phi_0"] = phi
+            else:
+                params.physical["phi_0"] = phi
+                
             params.update()
 
             return params
