@@ -4,7 +4,9 @@ from .chi_calculator import ChiCalculator
 
 class StressStrain():
     """
-    Class for fitting model parameters to stress-strain data
+    Class for fitting model parameters to stress-strain data.
+    Currently, this only works if sitting the *instantaneous*
+    stress-strain respose.
     """
 
     def __init__(self, axial_data):
@@ -14,8 +16,8 @@ class StressStrain():
         and the primary values is a dictionary that contains
         the data and the model.  The data should consist of the:
 
-        - axial strain (positive, with units of mm/mm)
-        - axial stress (positive, with units of Pa)
+        - axial strain (units of mm/mm, positive for tension)
+        - axial stress (units of Pa, positive for tension)
         - the model to use for that particular data
         """
 
@@ -25,12 +27,13 @@ class StressStrain():
     def strain_to_stretch(self):
         """
         Converts strain data (mm/mm) into stretch (lambda_z)
-        data
+        data.  Assumes that tensile strains are positive 
+        and compressive strains are negative.
         """
 
         for label in self.data:
             strain_data = self.data[label]["strain_data"]
-            self.data[label]["stretch_data"] = 1 - strain_data
+            self.data[label]["stretch_data"] = 1 + strain_data
 
     def solve(self, fitting_params, X_0, fixed_hydration = False):
         """
@@ -153,7 +156,7 @@ class StressStrain():
                 scaling = pars.scaling["stress"]
             else:
                 scaling = 1
-            cost += np.sqrt(np.mean((-scaling * S_z_T - self.data[key]["stress_data"])**2))
+            cost += np.sqrt(np.mean((scaling * S_z_T - self.data[key]["stress_data"])**2))
 
         # print(X, cost)
 
