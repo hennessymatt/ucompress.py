@@ -7,7 +7,7 @@ class StressStrain():
     Class for fitting model parameters to stress-strain data
     """
 
-    def __init__(self, data):
+    def __init__(self, axial_data):
         """
         Constructor.  The data should be a dict of dicts,
         where the primary keys are labels for the data/model
@@ -19,7 +19,7 @@ class StressStrain():
         - the model to use for that particular data
         """
 
-        self.data = data
+        self.data = axial_data
         self.strain_to_stretch()
 
     def strain_to_stretch(self):
@@ -128,7 +128,7 @@ class StressStrain():
             # update hydration if required
             if fixed_hydration:
                 chi_calc = ChiCalculator(model, pars)
-                chi, beta_r, beta_z, phi_0 = chi_calc.solve(J_0 = pars.physical["J_h"])
+                chi, beta_r, beta_z, phi_0 = chi_calc.solve(J_0 = 1 / (1 - pars.physical["phi_0"]))
                 pars.update("chi", chi)
                 pars.update("beta_r", beta_r)
                 pars.update("beta_z", beta_z)
@@ -149,7 +149,11 @@ class StressStrain():
             S_z_T = S_z - lam_r**2 * p
 
             # Compute the cost as the RMSE
-            cost += np.sqrt(np.mean((-pars.scaling["stress"] * S_z_T - self.data[key]["stress_data"])**2))
+            if pars.nondim:
+                scaling = pars.scaling["stress"]
+            else:
+                scaling = 1
+            cost += np.sqrt(np.mean((-scaling * S_z_T - self.data[key]["stress_data"])**2))
 
         # print(X, cost)
 
