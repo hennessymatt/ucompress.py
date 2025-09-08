@@ -6,13 +6,16 @@ is assumed to remain cylindrical during compression.
 
 Features of the code include:
 * Displacement- and force-controlled loading
-* Finite strains and neo-Hookean material responses
+* Finite strains and neo-Hookean responses
 * Material reinforcement with a transversely isotropic fibre network
-* Models for the engagement of fibre network with deformation
+* Models for the engagement of the fibre network with deformation
 * Deformation-dependent permeabilities
 * Models for osmotic stresses and swelling (e.g. for hydrogels)
-* Functions to fit stress-strain data
 
+The code is able to compute:
+* The equilibrium swelling of hydrogels
+* Instantaneous, transient, and steady-state responses to a load
+* Model parameters by fitting to stress-strain data or swelling data
 
 The code uses Chebyshev spectral differentiation 
 along with fully implicit time stepping.  An analytical
