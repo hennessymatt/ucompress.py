@@ -14,7 +14,7 @@ keywords = [
     "solid mechanics",
     "hydrogels"
 ]
-version = "0.0.2"
+version = "1.0.0"
 authors = [
     { name = "Matthew Hennessy", email = "matthew.hennessy@bristol.ac.uk"}
 ]
