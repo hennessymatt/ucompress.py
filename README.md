@@ -91,4 +91,4 @@ plt.show()
 To learn more about the capabilities of ucompress.py or to
 how to use it, please have a look at the [tutorials](/tutorials/).
 Please feel free to add a pull request if you would like
-to see a new tutorial added.
+to see a new feature or tutorial added.
