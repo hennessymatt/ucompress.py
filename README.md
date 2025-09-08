@@ -13,7 +13,7 @@ Features of the code include:
 * Models for osmotic stresses and swelling (e.g. for hydrogels)
 
 The code is able to compute:
-* The equilibrium swelling of hydrogels
+* The equilibrium swelling of hydrogels with or without a fibre network
 * Instantaneous, transient, and steady-state responses to a load
 * Model parameters by fitting to stress-strain data or swelling data
 
