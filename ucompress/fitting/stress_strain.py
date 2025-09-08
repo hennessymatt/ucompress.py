@@ -35,7 +35,7 @@ class StressStrain():
             strain_data = self.data[label]["strain_data"]
             self.data[label]["stretch_data"] = 1 + strain_data
 
-    def solve(self, fitting_params, X_0, fixed_hydration = False):
+    def solve(self, fitting_params, normalisation_factors = None, fixed_hydration = False):
         """
         Carries out the minimisation using SciPy's solvers
 
@@ -43,11 +43,11 @@ class StressStrain():
         
         fitting_params = a dictionary where the keys are strings
         that describe the parameters to fit and the values are
-        floats that are used to normalise the parameters so they
-        all contribute to the optimisation equally
-
-        X_0 = A NumPy array with the initial guesses of the (normalised) 
-        solution
+        initial guess.  
+        
+        normalisation_factors = an optional list of numerical values that
+        can be used to normalise the parameters to improve the performance
+        of the optimiser
 
         fixed_hydration = a flag that determines whether the initial
         hydration of the material should be kept constant during the
@@ -61,10 +61,19 @@ class StressStrain():
         print('----------------------')
         print(f'Stress-strain fit')
 
-
+        # build the initial condition array
+        X_0 = list(fitting_params.values())
+        
+        if normalisation_factors is None:
+            normalisation_factors = len(X_0) * [1]        
+        
+        # normalise the initial guess
+        for n in range(len(X_0)):
+            X_0[n] /= normalisation_factors[n]
+        
         # Solve the minimisation problem with SciPy
         result = minimize(
-            lambda X: self.calculate_cost(X, fitting_params, fixed_hydration), 
+            lambda X: self.calculate_cost(X, fitting_params, normalisation_factors, fixed_hydration), 
             X_0, 
             method = 'BFGS',
             options = {"xrtol": 1e-3})
@@ -77,9 +86,8 @@ class StressStrain():
 
         # un-normalised the fitted values
         fitted_vals = normalised_fitted_vals.copy()
-        for n, param in enumerate(fitting_params):
-            normalisation_factor = fitting_params[param]
-            fitted_vals[n] = normalised_fitted_vals[n] * normalisation_factor            
+        for n in range(len(X_0)):
+            fitted_vals[n] = normalised_fitted_vals[n] * normalisation_factors[n]        
 
         # print some info to the screen
         print('Optimal parameters:')
@@ -90,7 +98,7 @@ class StressStrain():
         return fitted_vals
 
 
-    def calculate_cost(self, X, fitting_params, fixed_hydration):
+    def calculate_cost(self, X, fitting_params, normalisation_factors, fixed_hydration):
         """
         Computes the objective function.  The compression of the
         material is assumed to be fast so that there is no loss
@@ -102,8 +110,11 @@ class StressStrain():
         
         fitting_params = a dictionary where the keys are strings
         that describe the parameters to fit and the values are
-        floats that are used to normalise the parameters so they
-        all contribute to the optimisation equally
+        initial guess.  
+        
+        normalisation_factors = an optional list of numerical values that
+        can be used to normalise the parameters to improve the performance
+        of the optimiser
 
         fixed_hydration = a flag that determines whether the initial
         hydration of the material should be kept constant during the
@@ -123,9 +134,8 @@ class StressStrain():
         for key in self.data:
             pars = self.data[key]["pars"]
             model = self.data[key]["model"]
-            for value, param in zip(X, fitting_params):
-                normalisation_factor = fitting_params[param]
-                pars.update(param, value * normalisation_factor)
+            for value, param, factor in zip(X, fitting_params, normalisation_factors):
+                pars.update(param, value * factor)
             model.assign(pars)
     
             # update hydration if required
@@ -157,7 +167,5 @@ class StressStrain():
             else:
                 scaling = 1
             cost += np.sqrt(np.mean((scaling * S_z_T - self.data[key]["stress_data"])**2))
-
-        # print(X, cost)
 
         return cost
