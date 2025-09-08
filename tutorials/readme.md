@@ -13,3 +13,4 @@ The best way to learn how to use `ucompress` is by working through the tutorials
 * [Tutorial 7](/tutorials/07-FibreReinforcedMaterials.ipynb) - Provides an overview of how to work with fibre-reinforced materials and the different models that are available.
 * [Tutorial 8](/tutorials/08-SolverOptions.ipynb) - Discusses how the solver options can be customised.  This is useful if you are seeing errors about the solver not converging.
 * [Tutorial 9](/tutorials/09-Hydrogels.ipynb) - Illustrates how to work with hydrogel-based materials in `ucompress`.
+* [Tutorial 10](/tutorials/10-FittingStressStrain.ipynb) - Showcases how to fit a `ucompress` model to instantaneous stress-strain data
